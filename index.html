@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madelean's - Coming Soon</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .logo {
+            width: 250px; /* Größe des Logos */
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 28px;
+            color: #2d6a4f; /* Dunkelgrün */
+        }
+        .countdown {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6600; /* Orange */
+            margin: 20px 0;
+        }
+        .description {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #2d6a4f;
+        }
+        .social-links a {
+            display: block;
+            font-size: 16px;
+            color: #0077b6; /* Blau */
+            text-decoration: none;
+            margin: 5px 0;
+        }
+        .social-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="logo.png" alt="Madelean's Logo" class="logo">
+
+    <h1>MADELEAN'S – Nachhaltige Mode für Tier- & Naturschutz!</h1>
+
+    <div class="countdown" id="countdown"></div>
+
+    <p class="description">
+        Unsere Kleidung und Accessoires sind fair, nachhaltig & mit Liebe designt. Dabei steht der Schutz von Tieren und der Umwelt im Fokus. Ein Teil der Einnahmen wird jeden Monat an Tier- und Umweltschutzprojekte gespendet. 🌱🐾
+    </p>
+
+    <p class="highlight">Warum machen wir das?</p>
+    <p>Weil wir gemeinsam etwas bewegen können! Mit jedem Kauf unterstützt ihr wichtige Projekte zum Schutz unserer Natur und ihrer Bewohner. Jeder Schritt zählt – und Mode kann dabei helfen, Bewusstsein zu schaffen.</p>
+
+    <p class="highlight">Wann geht’s los?</p>
+    <p>🎉 Ab dem 09.09.2025 ist der Shop online! 🎉</p>
+
+    <p class="highlight">Folgt uns auf Social Media:</p>
+    <div class="social-links">
+        <a href="https://www.tiktok.com/@madeleans_shop" target="_blank">📲 TikTok: @madeleans_shop</a>
+        <a href="https://www.instagram.com/madeleans_shop" target="_blank">📸 Instagram: @madeleans_shop</a>
+    </div>
+
+    <script>
+        function updateCountdown() {
+            const launchDate = new Date("September 9, 2025 00:00:00").getTime();
+            const now = new Date().getTime();
+            const timeLeft = launchDate - now;
+
+            if (timeLeft <= 0) {
+                document.getElementById("countdown").innerHTML = "🎉 Der Shop ist jetzt online! 🎉";
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerHTML = `${days} Tage, ${hours} Std, ${minutes} Min, ${seconds} Sek`;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+
+</body>
+</html>
