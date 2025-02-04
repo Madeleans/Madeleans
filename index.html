@@ -183,35 +183,45 @@ canvas {
         }
 
         function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
 
-            for (let i = 0; i < trashItems.length; i++) {
-                let trash = trashItems[i];
-                trash.y += trash.speed;
-                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+    let newTrashItems = [];
 
-                if (
-                    trash.y + trash.height >= net.y &&
-                    trash.x + trash.width >= net.x &&
-                    trash.x <= net.x + net.width
-                ) {
-                    score++;
-                    document.getElementById("score").textContent = score;
-                    trashItems.splice(i, 1);
-                    i--;
-                } else if (trash.y > canvas.height) {
-                    misses++;
-                    trashItems.splice(i, 1);
-                    i--;
-                    if (misses >= 3) {
-                        gameOver();
-                    }
-                }
-            }
+    for (let i = 0; i < trashItems.length; i++) {
+        let trash = trashItems[i];
+        trash.y += trash.speed;
+        ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
 
-            if (Math.random() < 0.02) createTrash();
+        // Kollisionserkennung mit dem Netz
+        if (
+            trash.y + trash.height >= net.y &&
+            trash.x + trash.width >= net.x &&
+            trash.x <= net.x + net.width
+        ) {
+            score++;
+            document.getElementById("score").textContent = score;
+            continue; // Dieses Müllstück wird nicht ins neue Array übernommen (d.h. entfernt)
         }
+
+        // Müll erreicht den Boden
+        if (trash.y > canvas.height) {
+            misses++;
+            if (misses >= 3) {
+                gameOver();
+                return;
+            }
+            continue; // Müllstück wird nicht ins neue Array übernommen
+        }
+
+        // Falls das Müllstück weder gefangen noch verpasst wurde, bleibt es im Spiel
+        newTrashItems.push(trash);
+    }
+
+    trashItems = newTrashItems; // Nur die verbleibenden Müllstücke bleiben erhalten
+
+    if (Math.random() < 0.02) createTrash();
+}
 
         function gameOver() {
             clearInterval(gameInterval);
