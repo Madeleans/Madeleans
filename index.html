@@ -50,44 +50,41 @@
             text-decoration: none;
             font-weight: bold;
         }
-        /* Spielbereich */
-        .game-container {
-    margin-top: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    overflow: hidden;
-}
 
-canvas {
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-        .score {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .game-message {
-            font-size: 20px;
-            font-weight: bold;
-            color: red;
-            display: none;
-        }
-        .slider-container {
+        /* --- SPIELBEREICH --- */
+        .game-container {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            max-width: 400px;
+        }
+        canvas {
+            width: 90%;
+            max-width: 600px;
+            height: auto;
+            background-color: lightgray;
+            border: 2px solid black;
+        }
+        #slider {
+            width: 90%;
+            max-width: 600px;
             margin-top: 10px;
         }
-        input[type="range"] {
-            width: 100%;
+        #start-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-
     <img src="logo.png" alt="Madelean's Logo" class="logo">
     <h1>MADELEAN'S – <span style="color: #6a5acd;">Nachhaltige Mode für Tier- & Naturschutz!</span></h1>
 
@@ -95,31 +92,19 @@ canvas {
 
     <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>. Dabei steht der Schutz von Tieren und der Umwelt im Fokus. Ein Teil der Einnahmen wird jeden Monat an Tier- und Umweltschutzprojekte gespendet. 🌱🐾</p>
 
-    <h2>Warum machen wir das?</h2>
-    <p>Weil wir gemeinsam etwas bewegen können! Mit jedem Kauf unterstützt ihr wichtige Projekte zum Schutz unserer Natur und ihrer Bewohner. Jeder Schritt zählt – und Mode kann dabei helfen, Bewusstsein zu schaffen.</p>
-
     <h2>Wann geht’s los?</h2>
     <p>🎉 Ab dem <span class="highlight">09.09.2025</span> ist der Shop online! 🎉</p>
 
     <div class="social-links">
-        <p>Folgt uns schon jetzt auf <strong>Social Media</strong>, um einen Einblick in unser Projekt & unsere Produkte zu bekommen:</p>
         <p>📲 <a href="https://www.tiktok.com/@madeleans_shop" target="_blank">TikTok: @madeleans_shop</a></p>
         <p>📸 <a href="https://www.instagram.com/madeleans_shop" target="_blank">Instagram: @madeleans_shop</a></p>
     </div>
 
-    <p>Lasst uns gemeinsam schützen, was wir lieben! ✨</p>
-
-    <!-- Spielbereich -->
+    <!-- SPIELBEREICH -->
     <div class="game-container">
-        <h2>Spiel: Müllfänger</h2>
-        <div class="score">Punkte: <span id="score">0</span></div>
-        <canvas id="gameCanvas" width="400" height="500"></canvas>
-        <div class="game-message" id="gameMessage">Game Over! Punkte: 0</div>
-        <button onclick="startGame()">Spiel starten</button>
-
-        <div class="slider-container">
-            <input type="range" id="netSlider" min="0" max="340" step="1">
-        </div>
+        <button id="start-button">Spiel starten</button>
+        <canvas id="gameCanvas"></canvas>
+        <input type="range" id="slider" min="0" max="100" value="50">
     </div>
 
     <script>
@@ -140,93 +125,15 @@ canvas {
 
         countdown();
 
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
+        // --- SPIEL ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const slider = document.getElementById('slider');
+        const startButton = document.getElementById('start-button');
 
+        let isGameRunning = false;
+        let playerX = 50;
         let score = 0;
-        let misses = 0;
-        let gameInterval;
-        let gameRunning = false;
+        let lives = 3;
 
-        const net = {
-            x: 180,
-            y: 450,
-            width: 60,
-            height: 40,
-            img: new Image()
-        };
-        net.img.src = "netz.png";
-
-        const trashImages = ["flasche.png", "dose.png", "plastik.png"];
-        let trashItems = [];
-
-        function createTrash() {
-            const img = new Image();
-            img.src = trashImages[Math.floor(Math.random() * trashImages.length)];
-
-            trashItems.push({
-                x: Math.random() * (canvas.width - 40),
-                y: -50,
-                width: 40,
-                height: 40,
-                img: img,
-                speed: 2 + Math.random() * 3
-            });
-        }
-
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
-
-            for (let i = 0; i < trashItems.length; i++) {
-                let trash = trashItems[i];
-                trash.y += trash.speed;
-                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
-
-                if (
-                    trash.y + trash.height >= net.y &&
-                    trash.x + trash.width >= net.x &&
-                    trash.x <= net.x + net.width
-                ) {
-                    score++;
-                    document.getElementById("score").textContent = score;
-                    trashItems.splice(i, 1);
-                    i--;
-                } else if (trash.y > canvas.height) {
-                    misses++;
-                    trashItems.splice(i, 1);
-                    i--;
-                    if (misses >= 3) {
-                        gameOver();
-                    }
-                }
-            }
-
-            if (Math.random() < 0.02) createTrash();
-        }
-
-        function gameOver() {
-            clearInterval(gameInterval);
-            gameRunning = false;
-            document.getElementById("gameMessage").textContent = `Game Over! Punkte: ${score}`;
-            document.getElementById("gameMessage").style.display = "block";
-        }
-
-        function startGame() {
-            score = 0;
-            misses = 0;
-            document.getElementById("score").textContent = score;
-            trashItems = [];
-            document.getElementById("gameMessage").style.display = "none";
-            clearInterval(gameInterval);
-            gameRunning = true;
-            gameInterval = setInterval(updateGame, 20);
-        }
-
-        document.getElementById("netSlider").addEventListener("input", function (event) {
-            net.x = event.target.value;
-        });
-    </script>
-
-</body>
-</html>
+        function
