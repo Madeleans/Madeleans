@@ -151,92 +151,101 @@
 
     <script>
         const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        
-        let score = 0;
-        let gameInterval;
-        
-        const net = {
-            x: 180,
-            y: 450,
-            width: 60,
-            height: 40,
-            img: new Image()
-        };
-        net.img.src = "netz.png"; // Ersetze mit dem Netz-Bild
-        
-        const trashImages = ["flasche.png", "dose.png", "plastik.png"]; // Ersetze mit echten Bildern
-        
-        let trashItems = [];
+const ctx = canvas.getContext("2d");
 
-        function createTrash() {
-            const img = new Image();
-            img.src = trashImages[Math.floor(Math.random() * trashImages.length)];
-            
-            trashItems.push({
-                x: Math.random() * (canvas.width - 40),
-                y: -50,
-                width: 40,
-                height: 40,
-                img: img,
-                speed: 2 + Math.random() * 3
-            });
-        }
+let score = 0;
+let misses = 0; // Fehlversuche zählen
+let gameInterval;
 
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Netz zeichnen
-            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
-            
-            // Müll bewegen und zeichnen
-            for (let i = 0; i < trashItems.length; i++) {
-                let trash = trashItems[i];
-                trash.y += trash.speed;
-                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+const net = {
+    x: 180,
+    y: 450,
+    width: 60,
+    height: 40,
+    img: new Image()
+};
+net.img.src = "netz.png";
 
-                // Kollision mit Netz prüfen
-                if (
-                    trash.y + trash.height >= net.y &&
-                    trash.x + trash.width >= net.x &&
-                    trash.x <= net.x + net.width
-                ) {
-                    score++;
-                    document.getElementById("score").textContent = score;
-                    trashItems.splice(i, 1);
-                    i--;
-                } else if (trash.y > canvas.height) {
-                    trashItems.splice(i, 1);
-                    i--;
-                }
-            }
+const trashImages = ["flasche.png", "dose.png", "plastik.png"];
+let trashItems = [];
 
-            if (Math.random() < 0.02) createTrash();
-        }
+function createTrash() {
+    const img = new Image();
+    img.src = trashImages[Math.floor(Math.random() * trashImages.length)];
 
-        function startGame() {
-            score = 0;
+    trashItems.push({
+        x: Math.random() * (canvas.width - 40),
+        y: -50,
+        width: 40,
+        height: 40,
+        img: img,
+        speed: 2 + Math.random() * 3
+    });
+}
+
+function updateGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
+
+    for (let i = 0; i < trashItems.length; i++) {
+        let trash = trashItems[i];
+        trash.y += trash.speed;
+        ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+
+        if (
+            trash.y + trash.height >= net.y &&
+            trash.x + trash.width >= net.x &&
+            trash.x <= net.x + net.width
+        ) {
+            score++;
             document.getElementById("score").textContent = score;
-            trashItems = [];
-            clearInterval(gameInterval);
-            gameInterval = setInterval(updateGame, 20);
+            trashItems.splice(i, 1);
+            i--;
+        } else if (trash.y > canvas.height) {
+            misses++; // Fehlversuch zählen
+            trashItems.splice(i, 1);
+            i--;
+            if (misses >= 3) {
+                alert("Game Over! Dein Punktestand: " + score);
+                resetGame();
+            }
         }
+    }
 
-        // PC-Steuerung
-        canvas.addEventListener("mousemove", function (event) {
-            let rect = canvas.getBoundingClientRect();
-            let mouseX = event.clientX - rect.left;
-            net.x = Math.max(0, Math.min(canvas.width - net.width, mouseX - net.width / 2));
-        });
+    if (Math.random() < 0.02) createTrash();
+}
 
-        // Touch-Steuerung
-        canvas.addEventListener("touchmove", function (event) {
-            let rect = canvas.getBoundingClientRect();
-            let touchX = event.touches[0].clientX - rect.left;
-            net.x = Math.max(0, Math.min(canvas.width - net.width, touchX - net.width / 2));
-        });
+function resetGame() {
+    score = 0;
+    misses = 0;
+    document.getElementById("score").textContent = score;
+    trashItems = [];
+    clearInterval(gameInterval);
+    startGame();
+}
 
-        startGame();
+function startGame() {
+    score = 0;
+    misses = 0;
+    document.getElementById("score").textContent = score;
+    trashItems = [];
+    clearInterval(gameInterval);
+    gameInterval = setInterval(updateGame, 20);
+}
+
+document.addEventListener("mousemove", function (event) {
+    let rect = canvas.getBoundingClientRect();
+    let mouseX = event.clientX - rect.left;
+    net.x = Math.max(0, Math.min(canvas.width - net.width, mouseX - net.width / 2));
+});
+
+document.addEventListener("touchmove", function (event) {
+    let rect = canvas.getBoundingClientRect();
+    let touchX = event.touches[0].clientX - rect.left;
+    net.x = Math.max(0, Math.min(canvas.width - net.width, touchX - net.width / 2));
+});
+
+startGame();
     </script>
 
     
