@@ -17,21 +17,6 @@
             width: 200px;
             margin-bottom: 20px;
         }
-        h1 {
-            font-size: 24px;
-            color: #ff69b4; /* Pink */
-        }
-        h2 {
-            font-size: 20px;
-            color: #ff69b4; /* Pink */
-        }
-        p {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        .highlight {
-            font-weight: bold;
-        }
         .countdown-container {
             margin: 20px auto;
             padding: 15px;
@@ -41,14 +26,6 @@
             font-weight: bold;
             border-radius: 10px;
             display: inline-block;
-        }
-        .social-links {
-            margin-top: 20px;
-        }
-        .social-links a {
-            color: #6a5acd; /* Lila */
-            text-decoration: none;
-            font-weight: bold;
         }
 
         /* --- SPIEL --- */
@@ -63,7 +40,7 @@
             width: 90%;
             max-width: 600px;
             height: auto;
-            background-color: lightgray;
+            background-color: lightblue;
             border: 2px solid black;
         }
         #slider {
@@ -86,26 +63,9 @@
 <body>
     <img src="logo.png" alt="Madelean's Logo" class="logo">
     <h1>MADELEAN'S – <span style="color: #6a5acd;">Nachhaltige Mode für Tier- & Naturschutz!</span></h1>
-
     <div class="countdown-container" id="countdown">Lädt...</div>
 
-    <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>. Dabei steht der Schutz von Tieren und der Umwelt im Fokus. Ein Teil der Einnahmen wird jeden Monat an Tier- und Umweltschutzprojekte gespendet. 🌱🐾</p>
-
-    <h2>Warum machen wir das?</h2>
-    <p>Weil wir gemeinsam etwas bewegen können! Mit jedem Kauf unterstützt ihr wichtige Projekte zum Schutz unserer Natur und ihrer Bewohner. Jeder Schritt zählt – und Mode kann dabei helfen, Bewusstsein zu schaffen.</p>
-
-    <h2>Wann geht’s los?</h2>
-    <p>🎉 Ab dem <span class="highlight">09.09.2025</span> ist der Shop online! 🎉</p>
-
-    <div class="social-links">
-        <p>Folgt uns schon jetzt auf <strong>Social Media</strong>, um einen Einblick in unser Projekt & unsere Produkte zu bekommen:</p>
-        <p>📲 <a href="https://www.tiktok.com/@madeleans_shop" target="_blank">TikTok: @madeleans_shop</a></p>
-        <p>📸 <a href="https://www.instagram.com/madeleans_shop" target="_blank">Instagram: @madeleans_shop</a></p>
-    </div>
-
-    <p>Lasst uns gemeinsam schützen, was wir lieben! ✨</p>
-
-    <!-- SPIELBEREICH -->
+    <!-- SPIEL -->
     <div class="game-container">
         <button id="start-button">Spiel starten</button>
         <canvas id="gameCanvas"></canvas>
@@ -118,12 +78,10 @@
             setInterval(() => {
                 const now = new Date().getTime();
                 const timeLeft = targetDate - now;
-
                 const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
                 document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
             }, 1000);
         }
@@ -137,23 +95,41 @@
         const startButton = document.getElementById('start-button');
 
         let isGameRunning = false;
-        let playerX = 50;
+        let playerX = 150;
         let score = 0;
         let lives = 3;
+        let trashItems = [];
+        let gameSpeed = 2;
 
         function resizeCanvas() {
             canvas.width = Math.min(window.innerWidth * 0.9, 600);
-            canvas.height = canvas.width * 0.75;
+            canvas.height = 400;
+        }
+
+        function createTrash() {
+            return {
+                x: Math.random() * (canvas.width - 30),
+                y: 0,
+                width: 30,
+                height: 30,
+                color: 'brown'
+            };
         }
 
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Spieler (z.B. ein Rechteck)
-            ctx.fillStyle = 'blue';
-            ctx.fillRect(playerX, canvas.height - 30, 50, 20);
+            // Spieler (Netz)
+            ctx.fillStyle = 'black';
+            ctx.fillRect(playerX, canvas.height - 50, 50, 20);
 
-            // Score anzeigen
+            // Müll zeichnen
+            trashItems.forEach(item => {
+                ctx.fillStyle = item.color;
+                ctx.fillRect(item.x, item.y, item.width, item.height);
+            });
+
+            // Score & Leben anzeigen
             ctx.fillStyle = 'black';
             ctx.font = '16px Arial';
             ctx.fillText(`Punkte: ${score} | Leben: ${lives}`, 10, 20);
@@ -161,20 +137,46 @@
 
         function updateGame() {
             if (!isGameRunning) return;
+
+            trashItems.forEach(item => {
+                item.y += gameSpeed;
+
+                // Kollision mit Netz prüfen
+                if (
+                    item.y + item.height >= canvas.height - 50 &&
+                    item.x < playerX + 50 &&
+                    item.x + item.width > playerX
+                ) {
+                    score += 1;
+                    trashItems.splice(trashItems.indexOf(item), 1);
+                }
+
+                // Müll fällt durch -> Leben verlieren
+                if (item.y > canvas.height) {
+                    lives -= 1;
+                    trashItems.splice(trashItems.indexOf(item), 1);
+                }
+            });
+
+            // Alle paar Frames neuen Müll erzeugen
+            if (Math.random() < 0.02) {
+                trashItems.push(createTrash());
+            }
+
             drawGame();
 
-            // Beispielhafte Logik: Punkte erhöhen
-            score += 1;
-
-            // Game Over Logik
-            if (lives <= 0) {
-                isGameRunning = false;
-                ctx.fillStyle = 'red';
-                ctx.font = '24px Arial';
-                ctx.fillText('Game Over!', canvas.width / 2 - 50, canvas.height / 2);
-            } else {
+            if (lives > 0) {
                 requestAnimationFrame(updateGame);
+            } else {
+                gameOver();
             }
+        }
+
+        function gameOver() {
+            isGameRunning = false;
+            ctx.fillStyle = 'red';
+            ctx.font = '24px Arial';
+            ctx.fillText('Game Over!', canvas.width / 2 - 50, canvas.height / 2);
         }
 
         slider.addEventListener('input', (event) => {
@@ -187,6 +189,7 @@
                 isGameRunning = true;
                 score = 0;
                 lives = 3;
+                trashItems = [];
                 updateGame();
             }
         });
