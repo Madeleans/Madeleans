@@ -2,83 +2,30 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Madelean's – Coming Soon</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            color: #333;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden; /* Kein ungewolltes Scrollen */
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-        }
-
-        .logo {
-            width: 150px;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            font-size: 22px;
-            color: #ff69b4;
-        }
-
-        h2 {
-            font-size: 18px;
-            color: #ff69b4;
-        }
-
-        p {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .countdown-container {
-            margin: 10px auto;
-            padding: 10px;
-            background-color: #ff69b4;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 10px;
-            display: inline-block;
+            font-family: Arial, sans-serif;
         }
 
         .game-container {
-            width: 100%;
-            max-width: 400px;
-            position: relative;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
         }
 
         canvas {
             background: #c3e6cb;
-            display: block;
-            margin: auto;
             border: 2px solid #333;
         }
 
         .score {
             font-size: 18px;
             font-weight: bold;
-            margin-top: 10px;
+            margin: 10px 0;
         }
 
         .game-message {
@@ -86,20 +33,6 @@
             font-weight: bold;
             color: red;
             display: none;
-        }
-
-        button {
-            margin-top: 10px;
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            background: #6a5acd;
-            color: white;
-            border-radius: 5px;
-        }
-
-        button:hover {
-            background: #5a4bbd;
         }
 
         .slider-container {
@@ -114,48 +47,21 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <img src="logo.png" alt="Madelean's Logo" class="logo">
-        <h1>MADELEAN'S – <span style="color: #6a5acd;">Nachhaltige Mode für Tier- & Naturschutz!</span></h1>
 
-        <div class="countdown-container" id="countdown">Lädt...</div>
+    <div class="game-container">
+        <h1>Spiele das Müllfänger-Spiel</h1>
+        <p>Fange den Müll mit dem Netz!</p>
+        <div class="score">Punkte: <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="400" height="500"></canvas>
+        <div class="game-message" id="gameMessage">Game Over! Punkte: 0</div>
+        <button onclick="startGame()">Spiel starten</button>
 
-        <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>. Dabei steht der Schutz von Tieren und der Umwelt im Fokus.</p>
-
-        <h2>Wann geht’s los?</h2>
-        <p>🎉 Ab dem <span class="highlight">09.09.2025</span> ist der Shop online! 🎉</p>
-
-        <div class="game-container">
-            <h1>Spiele das Müllfänger-Spiel</h1>
-            <p>Fange den Müll mit dem Netz!</p>
-            <div class="score">Punkte: <span id="score">0</span></div>
-            <canvas id="gameCanvas" width="400" height="500"></canvas>
-            <div class="game-message" id="gameMessage">Game Over! Punkte: 0</div>
-            <button onclick="startGame()">Spiel starten</button>
-
-            <div class="slider-container">
-                <input type="range" id="netSlider" min="0" max="340" step="1">
-            </div>
+        <div class="slider-container">
+            <input type="range" id="netSlider" min="0" max="340" step="1">
         </div>
     </div>
 
     <script>
-        function countdown() {
-            const targetDate = new Date("September 9, 2025 00:00:00").getTime();
-            setInterval(() => {
-                const now = new Date().getTime();
-                const timeLeft = targetDate - now;
-
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
-            }, 1000);
-        }
-        countdown();
-
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
@@ -243,5 +149,6 @@
             net.x = event.target.value;
         });
     </script>
+
 </body>
 </html>
