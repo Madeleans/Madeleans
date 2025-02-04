@@ -110,7 +110,7 @@
         <p>📸 <a href="https://www.instagram.com/madeleans_shop" target="_blank">Instagram: @madeleans_shop</a></p>
     </div>
 
-    <p>Lasst uns gemeinsam schützen, was wir lieben! ✨</p>
+    <p>Lasst uns gemeinsam schützen, was wir lieben! 🌿🐾✨</p>
 
     <!-- Spiel-Bereich -->
     <div class="game-container" id="game-container">
@@ -143,8 +143,23 @@
         let dogImage = new Image();
         dogImage.src = 'dog.png';
 
+        // Countdown-Funktion
+        function countdown() {
+            let timeLeft = 10;
+            const countdownElement = document.getElementById("countdown");
+            const interval = setInterval(function() {
+                countdownElement.textContent = `Lädt... ${timeLeft}`;
+                if (timeLeft === 0) {
+                    clearInterval(interval);
+                    countdownElement.textContent = "Spiel Start!";
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
         // Spiel starten
         function startGame() {
+            countdown();
             dogY = canvas.height - 70;
             dogSpeed = 0;
             isJumping = false;
