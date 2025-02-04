@@ -12,6 +12,7 @@
             color: #333;
             margin: 0;
             padding: 20px;
+            overflow-x: hidden; /* Verhindert horizontales Scrollen */
         }
         .logo {
             width: 200px;
@@ -19,18 +20,15 @@
         }
         h1 {
             font-size: 24px;
-            color: #ff69b4; /* Pink */
+            color: #ff69b4;
         }
         h2 {
             font-size: 20px;
-            color: #ff69b4; /* Pink */
+            color: #ff69b4;
         }
         p {
             font-size: 14px;
             line-height: 1.5;
-        }
-        .highlight {
-            font-weight: bold;
         }
         .countdown-container {
             margin: 20px auto;
@@ -42,13 +40,47 @@
             border-radius: 10px;
             display: inline-block;
         }
-        .social-links {
+        .game-container {
+            margin-top: 50px;
+            position: relative;
+            text-align: center;
+        }
+        canvas {
+            background: #c3e6cb;
+            display: block;
+            margin: 20px auto;
+            border: 2px solid #333;
+        }
+        .score {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .game-message {
+            font-size: 24px;
+            font-weight: bold;
+            color: red;
+            display: none; /* Wird nur bei Game Over angezeigt */
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background: #6a5acd;
+            color: white;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #5a4bbd;
+        }
+        .slider-container {
             margin-top: 20px;
         }
-        .social-links a {
-            color: #6a5acd; /* Lila */
-            text-decoration: none;
-            font-weight: bold;
+        input[type="range"] {
+            width: 80%;
+            max-width: 400px;
         }
     </style>
 </head>
@@ -58,21 +90,23 @@
 
     <div class="countdown-container" id="countdown">Lädt...</div>
 
-    <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>. Dabei steht der Schutz von Tieren und der Umwelt im Fokus. Ein Teil der Einnahmen wird jeden Monat an Tier- und Umweltschutzprojekte gespendet. 🌱🐾</p>
-
-    <h2>Warum machen wir das?</h2>
-    <p>Weil wir gemeinsam etwas bewegen können! Mit jedem Kauf unterstützt ihr wichtige Projekte zum Schutz unserer Natur und ihrer Bewohner. Jeder Schritt zählt – und Mode kann dabei helfen, Bewusstsein zu schaffen.</p>
+    <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>. Dabei steht der Schutz von Tieren und der Umwelt im Fokus.</p>
 
     <h2>Wann geht’s los?</h2>
     <p>🎉 Ab dem <span class="highlight">09.09.2025</span> ist der Shop online! 🎉</p>
 
-    <div class="social-links">
-        <p>Folgt uns schon jetzt auf <strong>Social Media</strong>, um einen Einblick in unser Projekt & unsere Produkte zu bekommen:</p>
-        <p>📲 <a href="https://www.tiktok.com/@madeleans_shop" target="_blank">TikTok: @madeleans_shop</a></p>
-        <p>📸 <a href="https://www.instagram.com/madeleans_shop" target="_blank">Instagram: @madeleans_shop</a></p>
-    </div>
+    <div class="game-container">
+        <h1>Spiele das Müllfänger-Spiel</h1>
+        <p>Fange den Müll mit dem Netz!</p>
+        <div class="score">Punkte: <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="400" height="500"></canvas>
+        <div class="game-message" id="gameMessage">Game Over! Punkte: 0</div>
+        <button onclick="startGame()">Spiel starten</button>
 
-    <p>Lasst uns gemeinsam schützen, was wir lieben! ✨</p>
+        <div class="slider-container">
+            <input type="range" id="netSlider" min="0" max="340" step="1">
+        </div>
+    </div>
 
     <script>
         function countdown() {
@@ -89,165 +123,94 @@
                 document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
             }, 1000);
         }
-
         countdown();
-    </script>
 
-    <!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Müllfänger-Spiel</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            text-align: center;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        canvas {
-            background: #c3e6cb;
-            display: block;
-            margin: auto;
-            border: 2px solid #333;
-        }
-        .game-container {
-            margin-top: 20px;
-        }
-        .score {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        button {
-            margin-top: 10px;
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            background: #6a5acd;
-            color: white;
-            border-radius: 5px;
-        }
-        button:hover {
-            background: #5a4bbd;
-        }
-    </style>
-</head>
-<body>
-
-    <h1>Spiele das Müllfänger-Spiel</h1>
-    <p>Fange den Müll mit dem Netz!</p>
-    <div class="score">Punkte: <span id="score">0</span></div>
-
-    <div class="game-container">
-        <canvas id="gameCanvas" width="400" height="500"></canvas>
-    </div>
-
-    <button onclick="startGame()">Neustart</button>
-
-    <script>
         const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d");
 
-let score = 0;
-let misses = 0; // Fehlversuche zählen
-let gameInterval;
+        let score = 0;
+        let misses = 0;
+        let gameInterval;
+        let gameRunning = false;
 
-const net = {
-    x: 180,
-    y: 450,
-    width: 60,
-    height: 40,
-    img: new Image()
-};
-net.img.src = "netz.png";
+        const net = {
+            x: 180,
+            y: 450,
+            width: 60,
+            height: 40,
+            img: new Image()
+        };
+        net.img.src = "netz.png";
 
-const trashImages = ["flasche.png", "dose.png", "plastik.png"];
-let trashItems = [];
+        const trashImages = ["flasche.png", "dose.png", "plastik.png"];
+        let trashItems = [];
 
-function createTrash() {
-    const img = new Image();
-    img.src = trashImages[Math.floor(Math.random() * trashImages.length)];
+        function createTrash() {
+            const img = new Image();
+            img.src = trashImages[Math.floor(Math.random() * trashImages.length)];
 
-    trashItems.push({
-        x: Math.random() * (canvas.width - 40),
-        y: -50,
-        width: 40,
-        height: 40,
-        img: img,
-        speed: 2 + Math.random() * 3
-    });
-}
-
-function updateGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
-
-    for (let i = 0; i < trashItems.length; i++) {
-        let trash = trashItems[i];
-        trash.y += trash.speed;
-        ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
-
-        if (
-            trash.y + trash.height >= net.y &&
-            trash.x + trash.width >= net.x &&
-            trash.x <= net.x + net.width
-        ) {
-            score++;
-            document.getElementById("score").textContent = score;
-            trashItems.splice(i, 1);
-            i--;
-        } else if (trash.y > canvas.height) {
-            misses++; // Fehlversuch zählen
-            trashItems.splice(i, 1);
-            i--;
-            if (misses >= 3) {
-                alert("Game Over! Dein Punktestand: " + score);
-                resetGame();
-            }
+            trashItems.push({
+                x: Math.random() * (canvas.width - 40),
+                y: -50,
+                width: 40,
+                height: 40,
+                img: img,
+                speed: 2 + Math.random() * 3
+            });
         }
-    }
 
-    if (Math.random() < 0.02) createTrash();
-}
+        function updateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
 
-function resetGame() {
-    score = 0;
-    misses = 0;
-    document.getElementById("score").textContent = score;
-    trashItems = [];
-    clearInterval(gameInterval);
-    startGame();
-}
+            for (let i = 0; i < trashItems.length; i++) {
+                let trash = trashItems[i];
+                trash.y += trash.speed;
+                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
 
-function startGame() {
-    score = 0;
-    misses = 0;
-    document.getElementById("score").textContent = score;
-    trashItems = [];
-    clearInterval(gameInterval);
-    gameInterval = setInterval(updateGame, 20);
-}
+                if (
+                    trash.y + trash.height >= net.y &&
+                    trash.x + trash.width >= net.x &&
+                    trash.x <= net.x + net.width
+                ) {
+                    score++;
+                    document.getElementById("score").textContent = score;
+                    trashItems.splice(i, 1);
+                    i--;
+                } else if (trash.y > canvas.height) {
+                    misses++;
+                    trashItems.splice(i, 1);
+                    i--;
+                    if (misses >= 3) {
+                        gameOver();
+                    }
+                }
+            }
 
-document.addEventListener("mousemove", function (event) {
-    let rect = canvas.getBoundingClientRect();
-    let mouseX = event.clientX - rect.left;
-    net.x = Math.max(0, Math.min(canvas.width - net.width, mouseX - net.width / 2));
-});
+            if (Math.random() < 0.02) createTrash();
+        }
 
-document.addEventListener("touchmove", function (event) {
-    let rect = canvas.getBoundingClientRect();
-    let touchX = event.touches[0].clientX - rect.left;
-    net.x = Math.max(0, Math.min(canvas.width - net.width, touchX - net.width / 2));
-});
+        function gameOver() {
+            clearInterval(gameInterval);
+            gameRunning = false;
+            document.getElementById("gameMessage").textContent = `Game Over! Punkte: ${score}`;
+            document.getElementById("gameMessage").style.display = "block";
+        }
 
-startGame();
+        function startGame() {
+            score = 0;
+            misses = 0;
+            document.getElementById("score").textContent = score;
+            trashItems = [];
+            document.getElementById("gameMessage").style.display = "none";
+            clearInterval(gameInterval);
+            gameRunning = true;
+            gameInterval = setInterval(updateGame, 20);
+        }
+
+        document.getElementById("netSlider").addEventListener("input", function (event) {
+            net.x = event.target.value;
+        });
     </script>
-
-    
 </body>
 </html>
