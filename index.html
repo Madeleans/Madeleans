@@ -52,15 +52,19 @@
         }
         /* Spielbereich */
         .game-container {
-            margin-top: 50px;
-            padding: 20px;
-            background-color: #f0f8ff;
-            border-radius: 10px;
-        }
-        canvas {
-            background: #c3e6cb;
-            border: 2px solid #333;
-        }
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
         .score {
             font-size: 18px;
             font-weight: bold;
