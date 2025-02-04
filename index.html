@@ -94,3 +94,130 @@
     </script>
 </body>
 </html>
+
+
+    <!-- Game Container -->
+    <h2>Spiele das Müll-Hüpfen-Spiel! 🌍</h2>
+    <canvas id="gameCanvas" width="500" height="200"></canvas>
+
+    <script>
+        // Initialisiere das Spiel
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let gameRunning = true;
+        let gravity = 0.8;
+        let isJumping = false;
+        let jumpPower = -15;
+        let playerY = canvas.height - 60;
+        let playerVelocity = 0;
+        let playerWidth = 50;
+        let playerHeight = 50;
+        let playerX = 50;
+
+        let obstacles = [];
+        let obstacleWidth = 30;
+        let obstacleHeight = 30;
+        let obstacleSpeed = 3;
+
+        // Tier-Design (Hund)
+        const dogImg = new Image();
+        dogImg.src = "dog.png"; // Ersetze dies mit dem Pfad zu einem Hundebild
+
+        // Startbedingungen
+        function startGame() {
+            obstacles.push(createObstacle());
+            requestAnimationFrame(updateGame);
+        }
+
+        // Spielfigur (Hund) bewegen
+        function updateGame() {
+            if (!gameRunning) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            updatePlayer();
+            updateObstacles();
+            checkCollision();
+            requestAnimationFrame(updateGame);
+        }
+
+        // Spielfigur nach oben springen
+        function updatePlayer() {
+            if (isJumping) {
+                playerVelocity += gravity;
+                playerY += playerVelocity;
+                if (playerY >= canvas.height - 60) {
+                    playerY = canvas.height - 60;
+                    isJumping = false;
+                    playerVelocity = 0;
+                }
+            }
+
+            // Hund auf die Canvas malen
+            ctx.drawImage(dogImg, playerX, playerY, playerWidth, playerHeight);
+        }
+
+        // Hindernisse bewegen und neu hinzufügen
+        function updateObstacles() {
+            for (let i = 0; i < obstacles.length; i++) {
+                obstacles[i].x -= obstacleSpeed;
+
+                // Wenn das Hindernis den Bildschirm verlässt, lösche es
+                if (obstacles[i].x + obstacleWidth < 0) {
+                    obstacles.splice(i, 1);
+                }
+
+                // Hindernisse zeichnen
+                ctx.fillStyle = "green"; // Müll ist grün (kann angepasst werden)
+                ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacleWidth, obstacleHeight);
+            }
+
+            // Neues Hindernis erzeugen
+            if (Math.random() < 0.02) {
+                obstacles.push(createObstacle());
+            }
+        }
+
+        // Zufälliges Hindernis erzeugen
+        function createObstacle() {
+            return {
+                x: canvas.width,
+                y: canvas.height - obstacleHeight,
+            };
+        }
+
+        // Kollisionsprüfung
+        function checkCollision() {
+            for (let i = 0; i < obstacles.length; i++) {
+                if (
+                    playerX + playerWidth > obstacles[i].x &&
+                    playerX < obstacles[i].x + obstacleWidth &&
+                    playerY + playerHeight > obstacles[i].y
+                ) {
+                    gameRunning = false;
+                    alert("Game Over! Du hast den Müll getroffen.");
+                }
+            }
+        }
+
+        // Event-Listener für das Springen
+        window.addEventListener("keydown", function (e) {
+            if (e.code === "Space" && !isJumping) {
+                isJumping = true;
+                playerVelocity = jumpPower;
+            }
+        });
+
+        // Spiel starten
+        dogImg.onload = function () {
+            startGame();
+        };
+    </script>
+
+    <style>
+        #gameCanvas {
+            background-color: #f1f1f1;
+            margin-top: 20px;
+            display: block;
+            border: 2px solid #6a5acd;
+        }
+    </style>
