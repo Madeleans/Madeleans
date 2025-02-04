@@ -51,13 +51,12 @@
             font-weight: bold;
         }
 
-        /* --- SPIELBEREICH --- */
+        /* --- SPIEL --- */
         .game-container {
             margin-top: 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             width: 100%;
         }
         canvas {
@@ -92,13 +91,19 @@
 
     <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>. Dabei steht der Schutz von Tieren und der Umwelt im Fokus. Ein Teil der Einnahmen wird jeden Monat an Tier- und Umweltschutzprojekte gespendet. 🌱🐾</p>
 
+    <h2>Warum machen wir das?</h2>
+    <p>Weil wir gemeinsam etwas bewegen können! Mit jedem Kauf unterstützt ihr wichtige Projekte zum Schutz unserer Natur und ihrer Bewohner. Jeder Schritt zählt – und Mode kann dabei helfen, Bewusstsein zu schaffen.</p>
+
     <h2>Wann geht’s los?</h2>
     <p>🎉 Ab dem <span class="highlight">09.09.2025</span> ist der Shop online! 🎉</p>
 
     <div class="social-links">
+        <p>Folgt uns schon jetzt auf <strong>Social Media</strong>, um einen Einblick in unser Projekt & unsere Produkte zu bekommen:</p>
         <p>📲 <a href="https://www.tiktok.com/@madeleans_shop" target="_blank">TikTok: @madeleans_shop</a></p>
         <p>📸 <a href="https://www.instagram.com/madeleans_shop" target="_blank">Instagram: @madeleans_shop</a></p>
     </div>
+
+    <p>Lasst uns gemeinsam schützen, was wir lieben! ✨</p>
 
     <!-- SPIELBEREICH -->
     <div class="game-container">
@@ -136,4 +141,58 @@
         let score = 0;
         let lives = 3;
 
-        function
+        function resizeCanvas() {
+            canvas.width = Math.min(window.innerWidth * 0.9, 600);
+            canvas.height = canvas.width * 0.75;
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Spieler (z.B. ein Rechteck)
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(playerX, canvas.height - 30, 50, 20);
+
+            // Score anzeigen
+            ctx.fillStyle = 'black';
+            ctx.font = '16px Arial';
+            ctx.fillText(`Punkte: ${score} | Leben: ${lives}`, 10, 20);
+        }
+
+        function updateGame() {
+            if (!isGameRunning) return;
+            drawGame();
+
+            // Beispielhafte Logik: Punkte erhöhen
+            score += 1;
+
+            // Game Over Logik
+            if (lives <= 0) {
+                isGameRunning = false;
+                ctx.fillStyle = 'red';
+                ctx.font = '24px Arial';
+                ctx.fillText('Game Over!', canvas.width / 2 - 50, canvas.height / 2);
+            } else {
+                requestAnimationFrame(updateGame);
+            }
+        }
+
+        slider.addEventListener('input', (event) => {
+            playerX = (canvas.width - 50) * (event.target.value / 100);
+            drawGame();
+        });
+
+        startButton.addEventListener('click', () => {
+            if (!isGameRunning) {
+                isGameRunning = true;
+                score = 0;
+                lives = 3;
+                updateGame();
+            }
+        });
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
+</body>
+</html>
