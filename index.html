@@ -133,7 +133,8 @@
         let dogY = canvas.height - 70; // Hund startet weiter unten
         let dogSpeed = 0;
         let isJumping = false;
-        let gravity = 0.6;
+        let gravity = 0.4; // Reduzierte Schwerkraft für langsameres Fallen
+        let jumpStrength = -12; // Verstärkter Sprung
 
         // Hund Bild laden
         let dogImage = new Image();
@@ -163,7 +164,7 @@
         // Hund Springen
         function jump() {
             if (!isJumping) {
-                dogSpeed = -10; // Geschwindigkeit des Sprungs
+                dogSpeed = jumpStrength; // Verstärkter Sprung
                 isJumping = true;
             }
         }
