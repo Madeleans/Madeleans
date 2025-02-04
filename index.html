@@ -50,15 +50,42 @@
             text-decoration: none;
             font-weight: bold;
         }
+        #gameCanvas {
+            background-color: #f1f1f1;
+            margin-top: 20px;
+            display: block;
+            border: 2px solid #6a5acd;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #startBtn, #restartBtn {
+            background-color: #6a5acd;
+            color: white;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        #startBtn:hover, #restartBtn:hover {
+            background-color: #5a4c9c;
+        }
     </style>
 </head>
 <body>
-    <img src="logo.png" alt="Madelean's Logo" class="logo">
+    <div class="logo">
+        <img src="logo.png" alt="Madelean's Logo" class="logo">
+    </div>
     <h1>MADELEAN'S – <span style="color: #6a5acd;">Nachhaltige Mode für Tier- & Naturschutz!</span></h1>
-
     <div class="countdown-container" id="countdown">Lädt...</div>
-
-    <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>. Dabei steht der Schutz von Tieren und der Umwelt im Fokus. Ein Teil der Einnahmen wird jeden Monat an Tier- und Umweltschutzprojekte gespendet. 🌱🐾</p>
+    <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>.</p>
 
     <h2>Warum machen wir das?</h2>
     <p>Weil wir gemeinsam etwas bewegen können! Mit jedem Kauf unterstützt ihr wichtige Projekte zum Schutz unserer Natur und ihrer Bewohner. Jeder Schritt zählt – und Mode kann dabei helfen, Bewusstsein zu schaffen.</p>
@@ -72,42 +99,25 @@
         <p>📸 <a href="https://www.instagram.com/madeleans_shop" target="_blank">Instagram: @madeleans_shop</a></p>
     </div>
 
-    <p>Lasst uns gemeinsam schützen, was wir lieben! ✨</p>
+    <p>Lasst uns gemeinsam schützen, was wir lieben! 🌿🐾✨</p>
 
-    <script>
-        function countdown() {
-            const targetDate = new Date("September 9, 2025 00:00:00").getTime();
-            setInterval(() => {
-                const now = new Date().getTime();
-                const timeLeft = targetDate - now;
-
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
-            }, 1000);
-        }
-
-        countdown();
-    </script>
-</body>
-</html>
-
-
-        <!-- Game Container -->
-    <h2>Spiele das Müll-Hüpfen-Spiel! 🌍</h2>
-    <div style="text-align: center;">
+    <!-- Game Section -->
+    <div class="game-container">
+        <h2>Spiele das Müll-Hüpfen-Spiel! 🌍</h2>
+        <p>Verwende die Leertaste, um das Tier über den Müll zu springen!</p>
+        <button id="startBtn">Spiel Starten</button>
         <canvas id="gameCanvas" width="500" height="200"></canvas>
+        <button id="restartBtn" style="display: none;">Neustarten</button>
     </div>
 
     <script>
-        // Initialisiere das Spiel
+        // Game Variables
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
+        const startBtn = document.getElementById("startBtn");
+        const restartBtn = document.getElementById("restartBtn");
 
-        let gameRunning = true;
+        let gameRunning = false;
         let gravity = 0.8;
         let isJumping = false;
         let jumpPower = -15;
@@ -116,11 +126,11 @@
         let playerWidth = 50;
         let playerHeight = 50;
         let playerX = 50;
-
         let obstacles = [];
         let obstacleWidth = 30;
         let obstacleHeight = 30;
         let obstacleSpeed = 3;
+        let score = 0;
 
         // Hund als Spielfigur (hier als rotes Quadrat)
         function drawPlayer() {
@@ -130,11 +140,15 @@
 
         // Spiel starten
         function startGame() {
+            gameRunning = true;
             obstacles.push(createObstacle());
+            startBtn.style.display = "none";  // Start Button ausblenden
+            restartBtn.style.display = "none"; // Neustart Button ausblenden
+            score = 0;
             requestAnimationFrame(updateGame);
         }
 
-        // Spielfigur (Hund) bewegen
+        // Spiel aktualisieren
         function updateGame() {
             if (!gameRunning) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Spielfläche löschen
@@ -142,6 +156,7 @@
             updatePlayer();
             updateObstacles();
             checkCollision();
+            updateScore();
             requestAnimationFrame(updateGame);
         }
 
@@ -168,6 +183,7 @@
                 // Hindernisse löschen, wenn sie den Bildschirm verlassen
                 if (obstacles[i].x + obstacleWidth < 0) {
                     obstacles.splice(i, 1);
+                    score++;  // Punktzahl erhöhen
                 }
 
                 // Hindernisse zeichnen
@@ -195,4 +211,40 @@
                 if (
                     playerX + playerWidth > obstacles[i].x &&
                     playerX < obstacles[i].x + obstacleWidth &&
-                  
+                    playerY + playerHeight > obstacles[i].y
+                ) {
+                    gameRunning = false;
+                    alert("Game Over! Du hast den Müll getroffen.");
+                    restartBtn.style.display = "block"; // Neustart Button einblenden
+                }
+            }
+        }
+
+        // Punktzahl anzeigen
+        function updateScore() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText("Punkte: " + score, canvas.width - 100, 30);
+        }
+
+        // Event-Listener für das Springen (Leertaste)
+        window.addEventListener("keydown", function (e) {
+            if (e.code === "Space" && !isJumping) {
+                isJumping = true;
+                playerVelocity = jumpPower;
+            }
+        });
+
+        // Neustart-Button
+        restartBtn.addEventListener("click", function () {
+            obstacles = [];
+            playerY = canvas.height - 60;
+            playerVelocity = 0;
+            startGame();
+        });
+
+        // Start-Button
+        startBtn.addEventListener("click", startGame);
+    </script>
+</body>
+</html>
