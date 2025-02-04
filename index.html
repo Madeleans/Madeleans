@@ -60,6 +60,8 @@
         canvas {
             background: #c3e6cb;
             border: 2px solid #333;
+            display: block;
+            margin: 0 auto;
         }
         .score {
             font-size: 18px;
@@ -73,12 +75,12 @@
             display: none;
         }
         .slider-container {
-            width: 100%;
-            max-width: 400px;
-            margin-top: 10px;
+            margin-top: 20px;
+            text-align: center;
         }
         input[type="range"] {
-            width: 100%;
+            width: 80%;
+            max-width: 400px;
         }
     </style>
 </head>
@@ -103,7 +105,7 @@
         <p>📸 <a href="https://www.instagram.com/madeleans_shop" target="_blank">Instagram: @madeleans_shop</a></p>
     </div>
 
-    <p>Lasst uns gemeinsam schützen, was wir lieben! ✨</p>
+    <p>Lasst uns gemeinsam schützen, was wir lieben! 🌿🐾✨</p>
 
     <!-- Spielbereich -->
     <div class="game-container">
@@ -114,6 +116,7 @@
         <button onclick="startGame()">Spiel starten</button>
 
         <div class="slider-container">
+            <label for="netSlider">Netz bewegen:</label><br>
             <input type="range" id="netSlider" min="0" max="340" step="1">
         </div>
     </div>
@@ -130,7 +133,7 @@
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
+                document.getElementById("countdown").innerHTML = `📅 Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
             }, 1000);
         }
 
@@ -151,9 +154,9 @@
             height: 40,
             img: new Image()
         };
-        net.img.src = "netz.png";
+        net.img.src = "netz.png";  // Stelle sicher, dass du dieses Bild hast.
 
-        const trashImages = ["flasche.png", "dose.png", "plastik.png"];
+        const trashImages = ["flasche.png", "dose.png", "plastik.png"];  // Stelle sicher, dass du diese Bilder hast.
         let trashItems = [];
 
         function createTrash() {
