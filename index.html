@@ -189,10 +189,11 @@
 
         // Kollisionslogik
         function checkCollisions() {
-            obstacles.forEach((obstacle) => {
+            obstacles.forEach((obstacle, index) => {
                 if (obstacle.x < 70 && obstacle.x + obstacleWidth > 0 && dogY + 50 >= obstacle.y) {
                     if (dogY + 50 <= obstacle.y + obstacleHeight) {
                         score++; // Punkte hinzufügen, wenn Hund über Hindernis springt
+                        obstacles.splice(index, 1); // Hindernis entfernen, da es übersprungen wurde
                     } else {
                         gameOver();
                     }
