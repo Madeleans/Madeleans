@@ -174,16 +174,16 @@
                             jumping = false;
                         }, 300);
                     }
-                    this.y -= 50;
+                    this.y -= 60; // Höherer Sprung
                 }
             };
 
-            // Hindernis-Objekt
+            // Hindernis-Objekt (Müll)
             trash = {
                 x: canvas.width,
-                y: 300,
-                width: 30,
-                height: 30,
+                y: 330, // Position des Mülls etwas nach unten verschoben
+                width: 40, // Kleinere Müllgröße
+                height: 40,
                 color: 'green',
                 draw() {
                     ctx.fillStyle = this.color;
