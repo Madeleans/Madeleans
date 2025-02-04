@@ -50,7 +50,7 @@
             text-decoration: none;
             font-weight: bold;
         }
-        
+
         /* Spiel Container */
         .game-container {
             margin-top: 30px;
@@ -126,108 +126,100 @@
     </div>
 
     <script>
-        function countdown() {
-            const targetDate = new Date("September 9, 2025 00:00:00").getTime();
-            setInterval(() => {
-                const now = new Date().getTime();
-                const timeLeft = targetDate - now;
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
 
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        let dog, obstacles, score, gameInterval;
+        let dogY = canvas.height - 70; // Hund startet weiter unten
+        let dogSpeed = 0;
+        let isJumping = false;
+        let gravity = 0.6;
 
-                document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
-            }, 1000);
-        }
+        // Hund Bild laden
+        let dogImage = new Image();
+        dogImage.src = 'dog.png';
 
-        countdown();
+        // Müll Objekte
+        const obstacleWidth = 50;
+        const obstacleHeight = 30;
+        const obstacleSpacing = 200; // Abstände der Müllobjekte
 
-        // Spiel-Logik
-        let canvas, ctx, dog, trash, obstacles, score, gameInterval, jumping, gameOver;
-
+        // Spiel starten
         function startGame() {
-            document.getElementById('game-container').style.display = 'block';
-            canvas = document.getElementById('gameCanvas');
-            ctx = canvas.getContext('2d');
+            dogY = canvas.height - 70;
+            dogSpeed = 0;
+            isJumping = false;
             obstacles = [];
             score = 0;
-            jumping = false;
-            gameOver = false;
-
-            // Hund-Objekt
-            dog = {
-                x: 50,
-                y: 300,
-                width: 50,
-                height: 50,
-                image: new Image(),
-                draw() {
-                    this.image.src = 'dog.png'; // Bild des Hundes
-                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-                },
-                jump() {
-                    if (!jumping) {
-                        jumping = true;
-                        setTimeout(() => {
-                            this.y = 300;
-                            jumping = false;
-                        }, 300);
-                    }
-                    this.y -= 60; // Höherer Sprung
-                }
-            };
-
-            // Hindernis-Objekt (Müll)
-            trash = {
-                x: canvas.width,
-                y: 330, // Position des Mülls etwas nach unten verschoben
-                width: 40, // Kleinere Müllgröße
-                height: 40,
-                color: 'green',
-                draw() {
-                    ctx.fillStyle = this.color;
-                    ctx.fillRect(this.x, this.y, this.width, this.height);
-                }
-            };
-
-            obstacles.push(trash);
-            gameInterval = setInterval(updateGame, 20);
+            gameInterval = setInterval(updateGame, 20); // Spielgeschwindigkeit anpassen
         }
 
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            dog.draw();
-            trash.draw();
-            score += 1;
-            ctx.fillStyle = 'black';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Punkte: ${score}`, 10, 20);
-
-            // Überprüfen, ob der Hund das Hindernis überspringt
-            if (dog.y < trash.y + trash.height && dog.x + dog.width > trash.x && dog.x < trash.x + trash.width) {
-                gameOver = true;
-                clearInterval(gameInterval);
-                alert('Game Over! Du hast ' + score + ' Punkte erreicht.');
-            }
-
-            // Hindernis bewegen
-            trash.x -= 3;
-            if (trash.x < 0) {
-                trash.x = canvas.width + Math.random() * 300;
-                score += 10;
-            }
-        }
-
+        // Spiel neustarten
         function restartGame() {
-            obstacles = [];
+            clearInterval(gameInterval);
             startGame();
         }
 
+        // Hund Springen
+        function jump() {
+            if (!isJumping) {
+                dogSpeed = -10; // Geschwindigkeit des Sprungs
+                isJumping = true;
+            }
+        }
+
+        // Spiel aktualisieren
+        function updateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Hund Bewegung
+            dogY += dogSpeed;
+            if (dogY < canvas.height - 70) {
+                dogSpeed += gravity;
+            } else {
+                dogY = canvas.height - 70;
+                dogSpeed = 0;
+                isJumping = false;
+            }
+
+            // Objekte bewegen
+            if (Math.random() < 0.02) {
+                obstacles.push({
+                    x: canvas.width,
+                    y: canvas.height - obstacleHeight
+                });
+            }
+
+            obstacles.forEach((obstacle, index) => {
+                obstacle.x -= 5;
+                ctx.fillStyle = "green";
+                ctx.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+
+                // Kollisionsprüfung
+                if (obstacle.x < 70 && obstacle.x + obstacleWidth > 0 && dogY + 50 >= obstacle.y) {
+                    if (dogY + 50 <= obstacle.y + obstacleHeight) {
+                        score++;
+                    }
+                }
+
+                if (obstacle.x < -obstacleWidth) {
+                    obstacles.splice(index, 1); // Objekte entfernen, wenn sie aus dem Bildschirm verschwunden sind
+                }
+            });
+
+            // Hund zeichnen
+            ctx.drawImage(dogImage, 50, dogY, 50, 50); // Hund-Bild wird gezeichnet
+
+            // Punktestand anzeigen
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText("Punkte: " + score, 10, 30);
+        }
+
         // Tasteneingabe für Sprung
-        document.addEventListener('keydown', function (e) {
-            if (e.key === ' ') {
-                dog.jump();
+        document.addEventListener("keydown", function(event) {
+            if (event.code === "Space") {
+                jump();
             }
         });
     </script>
