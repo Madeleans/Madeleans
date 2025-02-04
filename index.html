@@ -137,7 +137,7 @@
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                document.getElementById("countdown").innerHTML = `📅 Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
+                document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
             }, 1000);
         }
 
@@ -161,10 +161,10 @@
                 y: 300,
                 width: 50,
                 height: 50,
-                color: 'brown',
+                image: new Image(),
                 draw() {
-                    ctx.fillStyle = this.color;
-                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                    this.image.src = 'dog.png'; // Bild des Hundes
+                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
                 },
                 jump() {
                     if (!jumping) {
@@ -214,7 +214,7 @@
             // Hindernis bewegen
             trash.x -= 3;
             if (trash.x < 0) {
-                trash.x = canvas.width;
+                trash.x = canvas.width + Math.random() * 300;
                 score += 10;
             }
         }
