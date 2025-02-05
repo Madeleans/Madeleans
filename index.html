@@ -60,7 +60,6 @@
             margin-right: auto;
         }
         canvas {
-            width: 100%;
             background: #c3e6cb;
             border: 2px solid #333;
             display: block;
@@ -168,7 +167,7 @@
         const birdImage = "vogel.png";
 
         function createTrash() {
-            const isBird = Math.random() < 0.2; 
+            const isBird = Math.random() < 0.2;
             const img = new Image();
             img.src = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
 
@@ -187,10 +186,12 @@
             if (!gameRunning) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
+
             trashItems.forEach((trash, i) => {
                 trash.y += trash.speed * 0.5;
                 ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
             });
+
             if (Math.random() < 0.01) createTrash();
             requestAnimationFrame(updateGame);
         }
