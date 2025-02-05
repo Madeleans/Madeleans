@@ -216,7 +216,8 @@
                 if (
                     trash.y + trash.height >= net.y &&
                     trash.x + trash.width >= net.x &&
-                    trash.x <= net.x + net.width
+                    trash.x <= net.x + net.width &&
+                    trash.y + trash.height <= net.y + net.height
                 ) {
                     if (trash.isBird) {
                         // Vogel wurde gefangen -> Zähler erhöhen
