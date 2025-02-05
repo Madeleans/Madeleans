@@ -21,6 +21,17 @@
             font-size: 24px;
             color: #ff69b4;
         }
+        h2 {
+            font-size: 20px;
+            color: #ff69b4;
+        }
+        p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .highlight {
+            font-weight: bold;
+        }
         .countdown-container {
             margin: 20px auto;
             padding: 15px;
@@ -30,6 +41,14 @@
             font-weight: bold;
             border-radius: 10px;
             display: inline-block;
+        }
+        .social-links {
+            margin-top: 20px;
+        }
+        .social-links a {
+            color: #6a5acd;
+            text-decoration: none;
+            font-weight: bold;
         }
         .game-container {
             margin-top: 50px;
@@ -166,29 +185,21 @@
 
         function updateGame() {
             if (!gameRunning) return;
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
-
             trashItems.forEach((trash, i) => {
                 trash.y += trash.speed * 0.5;
                 ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
-
-                if (trash.y + trash.height >= net.y && trash.x + trash.width >= net.x && trash.x <= net.x + net.width) {
-                    if (trash.isBird) {
-                        birdsCaught++;
-                        document.getElementById("misses").textContent = `Vögel gefangen: ${birdsCaught}/3`;
-                        if (birdsCaught >= 3) gameOver();
-                    } else {
-                        score++;
-                        document.getElementById("score").textContent = score;
-                    }
-                    trashItems.splice(i, 1);
-                }
             });
-
             if (Math.random() < 0.01) createTrash();
             requestAnimationFrame(updateGame);
+        }
+
+        function startGame() {
+            score = 0;
+            birdsCaught = 0;
+            gameRunning = true;
+            updateGame();
         }
     </script>
 
