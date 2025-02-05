@@ -204,10 +204,13 @@
         }
 
         // Müll erreicht den Boden (nicht gefangen)
-        if (trash.y + trash.height >= canvas.height) { // Fix: `+ trash.height`
-            misses++; 
-            document.getElementById("misses").textContent = misses;
-            trashItems.splice(i, 1); // Jetzt sicher entfernen
+        if (trash.y + trash.height >= canvas.height) {
+            if (!trash.missed) {  // Sicherstellen, dass jedes Stück Müll nur einmal gezählt wird
+                trash.missed = true;
+                misses++; 
+                document.getElementById("misses").textContent = misses;
+            }
+            trashItems.splice(i, 1); // Jetzt erst entfernen
 
             if (misses >= 3) {
                 gameOver();
@@ -218,7 +221,7 @@
 
     // Zufällig neuen Müll generieren
     if (Math.random() < 0.02) createTrash();
-}
+        }
 
         function gameOver() {
             clearInterval(gameInterval);
