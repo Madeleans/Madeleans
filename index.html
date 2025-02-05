@@ -56,8 +56,7 @@
             background-color: #f0f8ff;
             border-radius: 10px;
             max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: auto;
             overflow: hidden;
         }
         canvas {
@@ -96,6 +95,15 @@
             max-width: 400px;
             display: block;
             margin: 0 auto;
+        }
+        .info-box {
+            font-size: 14px;
+            color: #666;
+            margin-top: 20px;
+            background: #ffeeba;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
         }
     </style>
 </head>
@@ -141,64 +149,24 @@
         </div>
     </div>
 
+    <div class="info-box">
+        Hinweis: Das Spiel befindet sich noch in Bearbeitung und kann vereinzelt Fehler enthalten. Vielen Dank für dein Verständnis!
+    </div>
+
     <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-
-        let score = 0;
-        let birdsCaught = 0;
-        let trashItems = [];
-        let gameRunning = false;
-
-        const net = { x: 170, y: 450, width: 60, height: 40, img: new Image() };
-        net.img.src = "netz.png";
-
-        const trashImages = ["dose.png", "flasche.png", "plastik.png"];
-        const birdImage = "vogel.png";
-
-        function createTrash() {
-            const isBird = Math.random() < 0.2; 
-            const img = new Image();
-            img.src = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
-
-            trashItems.push({
-                x: Math.random() * (canvas.width - 40),
-                y: -50,
-                width: 40,
-                height: 40,
-                img: img,
-                speed: 2 + Math.random() * 3,
-                isBird: isBird
-            });
+        function countdown() {
+            const targetDate = new Date("September 9, 2025 00:00:00").getTime();
+            setInterval(() => {
+                const now = new Date().getTime();
+                const timeLeft = targetDate - now;
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
+            }, 1000);
         }
-
-        function updateGame() {
-            if (!gameRunning) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
-
-            trashItems.forEach((trash, i) => {
-                trash.y += trash.speed * 0.5;
-                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
-            });
-
-            if (Math.random() < 0.01) createTrash();
-            requestAnimationFrame(updateGame);
-        }
-
-        function startGame() {
-            score = 0;
-            birdsCaught = 0;
-            document.getElementById("score").textContent = score;
-            document.getElementById("misses").textContent = "Vögel gefangen: 0/3";
-            gameRunning = true;
-            updateGame();
-        }
-
-        document.getElementById("netSlider").addEventListener("input", (e) => {
-            net.x = parseInt(e.target.value, 10);
-        });
+        countdown();
     </script>
 
 </body>
