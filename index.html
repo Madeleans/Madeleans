@@ -19,11 +19,11 @@
         }
         h1 {
             font-size: 24px;
-            color: #ff69b4; /* Pink */
+            color: #ff69b4;
         }
         h2 {
             font-size: 20px;
-            color: #ff69b4; /* Pink */
+            color: #ff69b4;
         }
         p {
             font-size: 14px;
@@ -46,33 +46,41 @@
             margin-top: 20px;
         }
         .social-links a {
-            color: #6a5acd; /* Lila */
+            color: #6a5acd;
             text-decoration: none;
             font-weight: bold;
         }
-        /* Spielbereich */
         .game-container {
-    margin-top: 50px;
-    margin-bottom: 50px;
-    padding: 20px;
-    background-color: #f0f8ff;
-    border-radius: 10px;
-    max-width: 100%; /* Verhindert horizontales Scrollen */
-    overflow: hidden; /* Verhindert, dass das Canvas überläuft */
-}
-
-canvas {
-    width: 100%; /* Skaliert die Breite des Canvas relativ zum Container */
-    height: auto; /* Erhält das Seitenverhältnis bei der Größenänderung */
-    background: #c3e6cb;
-    border: 2px solid #333;
-    display: block;
-    margin: 0 auto;
-}
-        .score {
+            margin-top: 50px;
+            margin-bottom: 50px;
+            padding: 20px;
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+            background: #c3e6cb;
+            border: 2px solid #333;
+            display: block;
+            margin: 0 auto;
+        }
+        .score-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px auto;
             font-size: 18px;
             font-weight: bold;
-            margin: 10px 0;
+        }
+        .score {
+            color: black;
+        }
+        .misses {
+            color: red;
         }
         .game-message {
             font-size: 20px;
@@ -116,10 +124,10 @@ canvas {
     <!-- Spielbereich -->
     <div class="game-container">
         <h2>Spiel: Müllfänger</h2>
-        <p>Steuere das Netz mit dem Schieberegler, um den Müll aufzufangen.</p>
-<p>Jedes Stück Müll, das du erfolgreich fängst, bringt Punkte.</p>
-<p>Aber Vorsicht: Verpasst du zu viel Müll, endet das Spiel!</p>
-        <div class="score">Punkte: <span id="score">0</span></div>
+        <div class="score-container">
+            <div class="score">Punkte: <span id="score">0</span></div>
+            <div class="misses">Verpasst: <span id="misses">0</span></div>
+        </div>
         <canvas id="gameCanvas" width="400" height="500"></canvas>
         <div class="game-message" id="gameMessage">Game Over! Punkte: 0</div>
         <button onclick="startGame()">Spiel starten</button>
@@ -156,16 +164,10 @@ canvas {
         let gameInterval;
         let gameRunning = false;
 
-        const net = {
-            x: 180,
-            y: 450,
-            width: 60,
-            height: 40,
-            img: new Image()
-        };
-        net.img.src = "netz.png";  // Stelle sicher, dass du dieses Bild hast.
+        const net = { x: 180, y: 450, width: 60, height: 40, img: new Image() };
+        net.img.src = "netz.png";
 
-        const trashImages = ["flasche.png", "dose.png", "plastik.png"];  // Stelle sicher, dass du diese Bilder hast.
+        const trashImages = ["flasche.png", "dose.png", "plastik.png"];
         let trashItems = [];
 
         function createTrash() {
@@ -183,65 +185,53 @@ canvas {
         }
 
         function updateGame() {
-    if (!gameRunning) return; // Falls das Spiel beendet ist, keine weiteren Updates
+            if (!gameRunning) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
 
-    for (let i = trashItems.length - 1; i >= 0; i--) {
-        let trash = trashItems[i];
-        trash.y += trash.speed;
-        ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+            for (let i = trashItems.length - 1; i >= 0; i--) {
+                let trash = trashItems[i];
+                trash.y += trash.speed;
+                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
 
-        // Kollisionserkennung mit dem Netz
-        if (
-            trash.y + trash.height >= net.y &&
-            trash.x + trash.width >= net.x &&
-            trash.x <= net.x + net.width
-        ) {
-            score++;
-            document.getElementById("score").textContent = score;
-            trashItems.splice(i, 1);
-            continue;
-        }
+                if (trash.y + trash.height >= net.y && trash.x + trash.width >= net.x && trash.x <= net.x + net.width) {
+                    score++;
+                    document.getElementById("score").textContent = score;
+                    trashItems.splice(i, 1);
+                    continue;
+                }
 
-        // Müll erreicht den Boden (nicht gefangen)
-        if (trash.y > canvas.height) {
-            misses++;
-            trashItems.splice(i, 1);
-            console.log(`Müll verpasst! Anzahl: ${misses}`);
+                if (trash.y > canvas.height) {
+                    misses++;
+                    document.getElementById("misses").textContent = misses;
+                    trashItems.splice(i, 1);
 
-            if (misses >= 3) {
-                gameOver();
-                return;
+                    if (misses >= 3) gameOver();
+                }
             }
+            if (Math.random() < 0.02) createTrash();
         }
-    }
 
-    if (Math.random() < 0.02) createTrash();
-}
         function gameOver() {
-    console.log("Game Over wurde aufgerufen.");
-    clearInterval(gameInterval);
-    gameRunning = false;
-    document.getElementById("gameMessage").textContent = `Game Over! Punkte: ${score}`;
-    document.getElementById("gameMessage").style.display = "block";
+            clearInterval(gameInterval);
+            gameRunning = false;
+            document.getElementById("gameMessage").textContent = `Game Over! Punkte: ${score}`;
+            document.getElementById("gameMessage").style.display = "block";
         }
 
         function startGame() {
             score = 0;
             misses = 0;
             document.getElementById("score").textContent = score;
+            document.getElementById("misses").textContent = misses;
             trashItems = [];
             document.getElementById("gameMessage").style.display = "none";
-            clearInterval(gameInterval);
             gameRunning = true;
             gameInterval = setInterval(updateGame, 20);
         }
 
-        document.getElementById("netSlider").addEventListener("input", function (event) {
-            net.x = event.target.value;
-        });
+        document.getElementById("netSlider").addEventListener("input", (e) => net.x = e.target.value);
     </script>
 
 </body>
