@@ -171,46 +171,59 @@
             });
         }
 
-        function updateGame() {
-            if (!gameRunning) return;
+       function updateGame() {
+    if (!gameRunning) return;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
 
-            for (let i = trashItems.length - 1; i >= 0; i--) {
-                let trash = trashItems[i];
-                trash.y += trash.speed;
-                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+    for (let i = trashItems.length - 1; i >= 0; i--) {
+        let trash = trashItems[i];
+        trash.y += trash.speed;
+        ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
 
-                if (trash.y + trash.height >= net.y && trash.x + trash.width >= net.x && trash.x <= net.x + net.width) {
-                    if (trash.isBird) {
-                        birdsCaught++;
-                        document.getElementById("misses").textContent = `Vögel gefangen: ${birdsCaught}/3`;
-                    } else {
-                        score++;
-                        document.getElementById("score").textContent = score;
-                    }
+        // Überprüfung, ob das Objekt das Netz berührt
+        if (
+            trash.y + trash.height >= net.y &&
+            trash.x + trash.width >= net.x &&
+            trash.x <= net.x + net.width
+        ) {
+            if (trash.isBird) {
+                // Vogel wurde gefangen -> Zähler erhöhen
+                birdsCaught++;
+                document.getElementById("misses").textContent = `Vögel gefangen: ${birdsCaught}/3`;
 
-                    trashItems.splice(i, 1);
-
-                    if (birdsCaught >= 3) {
-                        gameOver();
-                        return;
-                    }
-                    continue;
+                // Spiel beenden, wenn 3 Vögel gefangen wurden
+                if (birdsCaught >= 3) {
+                    gameOver();
+                    return;
                 }
-
-                if (trash.y > canvas.height) {
-                    if (!trash.isBird) {
-                        score--;
-                        document.getElementById("score").textContent = score;
-                    }
-                    trashItems.splice(i, 1);
-                }
+            } else {
+                // Normaler Müll gefangen -> +1 Punkt
+                score++;
+                document.getElementById("score").textContent = score;
             }
 
-            if (Math.random() < 0.02) createTrash();
+            // Das gefangene Objekt entfernen
+            trashItems.splice(i, 1);
+            continue;
         }
+
+        // Wenn ein Objekt das Spielfeld verlässt (nicht gefangen)
+        if (trash.y > canvas.height) {
+            if (!trash.isBird) {
+                // Müll wurde verpasst -> -1 Punkt
+                score--;
+                document.getElementById("score").textContent = score;
+            }
+            // Objekt aus dem Array entfernen
+            trashItems.splice(i, 1);
+        }
+    }
+
+    // Zufällig neue Objekte erzeugen
+    if (Math.random() < 0.02) createTrash();
+}
 
         function gameOver() {
             clearInterval(gameInterval);
