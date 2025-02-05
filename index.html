@@ -185,33 +185,42 @@
         }
 
         function updateGame() {
-            if (!gameRunning) return;
+    if (!gameRunning) return;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
 
-            for (let i = trashItems.length - 1; i >= 0; i--) {
-                let trash = trashItems[i];
-                trash.y += trash.speed;
-                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+    for (let i = trashItems.length - 1; i >= 0; i--) {
+        let trash = trashItems[i];
+        trash.y += trash.speed;
+        ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
 
-                if (trash.y + trash.height >= net.y && trash.x + trash.width >= net.x && trash.x <= net.x + net.width) {
-                    score++;
-                    document.getElementById("score").textContent = score;
-                    trashItems.splice(i, 1);
-                    continue;
-                }
-
-                if (trash.y > canvas.height) {
-                    misses++;
-                    document.getElementById("misses").textContent = misses;
-                    trashItems.splice(i, 1);
-
-                    if (misses >= 3) gameOver();
-                }
-            }
-            if (Math.random() < 0.02) createTrash();
+        // Kollision mit dem Netz
+        if (trash.y + trash.height >= net.y && trash.x + trash.width >= net.x && trash.x <= net.x + net.width) {
+            score++;
+            document.getElementById("score").textContent = score;
+            trashItems.splice(i, 1);
+            continue;
         }
+
+        // Müll erreicht den Boden (nicht gefangen)
+        if (trash.y >= canvas.height) {
+            misses++; // Zähler erhöhen, bevor das Element entfernt wird
+            document.getElementById("misses").textContent = misses;
+            console.log(`Müll verpasst! Gesamt: ${misses}`); // Debugging
+
+            trashItems.splice(i, 1); // Müll aus dem Array entfernen
+
+            if (misses >= 3) {
+                gameOver();
+                return;
+            }
+        }
+    }
+
+    // Zufällig neuen Müll generieren
+    if (Math.random() < 0.02) createTrash();
+}
 
         function gameOver() {
             clearInterval(gameInterval);
