@@ -185,46 +185,32 @@
         }
 
         function updateGame() {
-    if (!gameRunning) return;
+            if (!gameRunning) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
 
-    for (let i = trashItems.length - 1; i >= 0; i--) {
-        let trash = trashItems[i];
-        trash.y += trash.speed;
-        ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+            for (let i = trashItems.length - 1; i >= 0; i--) {
+                let trash = trashItems[i];
+                trash.y += trash.speed;
+                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
 
-        // Kollision mit dem Netz
-        if (trash.y + trash.height >= net.y && trash.x + trash.width >= net.x && trash.x <= net.x + net.width) {
-            score++;
-            document.getElementById("score").textContent = score;
-            trashItems.splice(i, 1);
-            continue;
-        }
+                if (trash.y + trash.height >= net.y && trash.x + trash.width >= net.x && trash.x <= net.x + net.width) {
+                    score++;
+                    document.getElementById("score").textContent = score;
+                    trashItems.splice(i, 1);
+                    continue;
+                }
 
-        // Müll erreicht den Boden (nicht gefangen)
-        if (trash.y + trash.height >= canvas.height) {
-            if (!trash.missed) {  // Sicherstellen, dass jedes Stück Müll nur einmal gezählt wird
-                trash.missed = true;
-                misses++; 
-                document.getElementById("misses").textContent = misses;
+                if (trash.y > canvas.height) {
+                    misses++;
+                    document.getElementById("misses").textContent = misses;
+                    trashItems.splice(i, 1);
+
+                    if (misses >= 3) gameOver();
+                }
             }
-            trashItems.splice(i, 1); // Jetzt erst entfernen
-
-            if (misses >= 3) {
-                gameOver();
-                return;
-            }
-        }
-    }
-
-    // Zufällig neuen Müll generieren
-    if (Math.random() < 0.02) createTrash();
-}
-
-    // Zufällig neuen Müll generieren
-    if (Math.random() < 0.02) createTrash();
+            if (Math.random() < 0.02) createTrash();
         }
 
         function gameOver() {
