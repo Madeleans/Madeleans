@@ -183,6 +183,8 @@ canvas {
         }
 
         function updateGame() {
+    if (!gameRunning) return; // Falls das Spiel beendet ist, keine weiteren Updates
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
 
@@ -199,14 +201,16 @@ canvas {
         ) {
             score++;
             document.getElementById("score").textContent = score;
-            trashItems.splice(i, 1); // Müll entfernen
+            trashItems.splice(i, 1);
             continue;
         }
 
         // Müll erreicht den Boden (nicht gefangen)
         if (trash.y > canvas.height) {
             misses++;
-            trashItems.splice(i, 1); // Müll entfernen
+            trashItems.splice(i, 1);
+            console.log(`Müll verpasst! Anzahl: ${misses}`);
+
             if (misses >= 3) {
                 gameOver();
                 return;
@@ -216,12 +220,12 @@ canvas {
 
     if (Math.random() < 0.02) createTrash();
 }
-
         function gameOver() {
-            clearInterval(gameInterval);
-            gameRunning = false;
-            document.getElementById("gameMessage").textContent = `Game Over! Punkte: ${score}`;
-            document.getElementById("gameMessage").style.display = "block";
+    console.log("Game Over wurde aufgerufen.");
+    clearInterval(gameInterval);
+    gameRunning = false;
+    document.getElementById("gameMessage").textContent = `Game Over! Punkte: ${score}`;
+    document.getElementById("gameMessage").style.display = "block";
         }
 
         function startGame() {
