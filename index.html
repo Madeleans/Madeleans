@@ -19,18 +19,7 @@
         }
         h1 {
             font-size: 24px;
-            color: #ff69b4; /* Pink */
-        }
-        h2 {
-            font-size: 20px;
-            color: #ff69b4; /* Pink */
-        }
-        p {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        .highlight {
-            font-weight: bold;
+            color: #ff69b4;
         }
         .countdown-container {
             margin: 20px auto;
@@ -42,26 +31,17 @@
             border-radius: 10px;
             display: inline-block;
         }
-        .social-links {
-            margin-top: 20px;
-        }
-        .social-links a {
-            color: #6a5acd; /* Lila */
-            text-decoration: none;
-            font-weight: bold;
-        }
         .game-container {
             margin-top: 50px;
-            margin-bottom: 50px;
             padding: 20px;
             background-color: #f0f8ff;
             border-radius: 10px;
-            max-width: 100%;
-            overflow: hidden;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         canvas {
             width: 100%;
-            height: auto;
             background: #c3e6cb;
             border: 2px solid #333;
             display: block;
@@ -70,9 +50,6 @@
         .score-container {
             display: flex;
             justify-content: space-between;
-            width: 100%;
-            max-width: 400px;
-            margin: 10px auto;
             font-size: 18px;
             font-weight: bold;
         }
@@ -87,22 +64,6 @@
             font-weight: bold;
             color: red;
             display: none;
-        }
-        .slider-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        input[type="range"] {
-            width: 80%;
-            max-width: 400px;
-        }
-
-        /* Responsive Design */
-        @media screen and (min-width: 768px) {
-            .game-container {
-                max-width: 600px;
-                margin: 0 auto;
-            }
         }
     </style>
 </head>
@@ -139,14 +100,10 @@
         </div>
 
         <canvas id="gameCanvas" width="400" height="500"></canvas>
-
         <div class="game-message" id="gameMessage">Game Over! Du hast 3 Vögel gefangen!</div>
         <button onclick="startGame()">Spiel starten</button>
 
-        <div class="slider-container">
-            <label for="netSlider">Netz bewegen:</label>
-            <input type="range" id="netSlider" min="0" max="340" step="1">
-        </div>
+        <input type="range" id="netSlider" min="0" max="340" step="1">
     </div>
 
     <script>
@@ -155,12 +112,10 @@
             setInterval(() => {
                 const now = new Date().getTime();
                 const timeLeft = targetDate - now;
-
                 const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
                 document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
             }, 1000);
         }
@@ -178,17 +133,12 @@
         net.img.src = "netz.png";
 
         const trashImages = ["dose.png", "flasche.png", "plastik.png"];
-        const birdImage = "vogel.png"; // Der Vogel darf NICHT gefangen werden
+        const birdImage = "vogel.png";
 
         function createTrash() {
-            const isBird = Math.random() < 0.2; // 20% Wahrscheinlichkeit, dass ein Vogel erscheint
+            const isBird = Math.random() < 0.2; 
             const img = new Image();
-            
-            if (isBird) {
-                img.src = birdImage;
-            } else {
-                img.src = trashImages[Math.floor(Math.random() * trashImages.length)];
-            }
+            img.src = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
 
             trashItems.push({
                 x: Math.random() * (canvas.width - 40),
@@ -202,77 +152,51 @@
         }
 
         function updateGame() {
-    if (!gameRunning) return;
+            if (!gameRunning) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
 
-    for (let i = trashItems.length - 1; i >= 0; i--) {
-        let trash = trashItems[i];
-        trash.y += trash.speed * 0.6; // Langsamer fallende Objekte
+            for (let i = trashItems.length - 1; i >= 0; i--) {
+                let trash = trashItems[i];
+                trash.y += trash.speed * 0.5; 
 
-        ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
 
-        // Prüfen, ob das Objekt das Netz trifft
-        if (
-            trash.y + trash.height >= net.y &&
-            trash.x + trash.width >= net.x &&
-            trash.x <= net.x + net.width
-        ) {
-            if (trash.isBird) {
-                birdsCaught++; // Vogel wurde wirklich gefangen!
-                document.getElementById("misses").textContent = `Vögel gefangen: ${birdsCaught}/3`;
+                if (trash.y + trash.height >= net.y && trash.x + trash.width >= net.x && trash.x <= net.x + net.width) {
+                    if (trash.isBird) {
+                        birdsCaught++; 
+                        document.getElementById("misses").textContent = `Vögel gefangen: ${birdsCaught}/3`;
 
-                if (birdsCaught >= 3) {
-                    gameOver();
-                    return;
+                        if (birdsCaught >= 3) {
+                            gameOver();
+                            return;
+                        }
+                    } else {
+                        score++; 
+                        document.getElementById("score").textContent = score;
+                    }
+
+                    trashItems.splice(i, 1);
                 }
-            } else {
-                score++; // Müll gibt Punkte
-                document.getElementById("score").textContent = score;
             }
 
-            trashItems.splice(i, 1);
-            continue;
-        }
-
-        // Müll, der den Boden erreicht, zählt als verpasst
-        if (trash.y >= canvas.height) {
-            if (!trash.isBird) {
-                score--; // Müll verpasst -> Punktabzug
-                document.getElementById("score").textContent = score;
-            }
-
-            trashItems.splice(i, 1);
-        }
-    }
-
-    if (Math.random() < 0.015) createTrash(); // Weniger Objekte auf einmal erzeugen
-        }
-
+            if (Math.random() < 0.01) createTrash();
             requestAnimationFrame(updateGame);
         }
 
         function startGame() {
-    score = 0;
-    birdsCaught = 0;
-    document.getElementById("score").textContent = score;
-    document.getElementById("misses").textContent = "Vögel gefangen: 0/3";
-    trashItems = [];
-    document.getElementById("gameMessage").style.display = "none";
-    gameRunning = true;
-    clearInterval(gameInterval);
-    gameInterval = setInterval(updateGame, 30); // Längere Updates für bessere Kontrolle
+            score = 0;
+            birdsCaught = 0;
+            document.getElementById("gameMessage").style.display = "none";
+            gameRunning = true;
+            updateGame();
         }
 
         function gameOver() {
             gameRunning = false;
             document.getElementById("gameMessage").style.display = "block";
         }
-
-        document.getElementById("netSlider").addEventListener("input", (e) => {
-            net.x = e.target.value;
-        });
     </script>
 
 </body>
