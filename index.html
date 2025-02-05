@@ -204,12 +204,10 @@
         }
 
         // Müll erreicht den Boden (nicht gefangen)
-        if (trash.y >= canvas.height) {
-            misses++; // Zähler erhöhen, bevor das Element entfernt wird
+        if (trash.y + trash.height >= canvas.height) { // Fix: `+ trash.height`
+            misses++; 
             document.getElementById("misses").textContent = misses;
-            console.log(`Müll verpasst! Gesamt: ${misses}`); // Debugging
-
-            trashItems.splice(i, 1); // Müll aus dem Array entfernen
+            trashItems.splice(i, 1); // Jetzt sicher entfernen
 
             if (misses >= 3) {
                 gameOver();
