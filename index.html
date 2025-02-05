@@ -1,245 +1,208 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Madelean's – Coming Soon</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            text-align: center;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        .logo {
-            width: 200px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            font-size: 24px;
-            color: #ff69b4; /* Pink */
-        }
-        h2 {
-            font-size: 20px;
-            color: #ff69b4; /* Pink */
-        }
-        p {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        .highlight {
-            font-weight: bold;
-        }
-        .countdown-container {
-            margin: 20px auto;
-            padding: 15px;
-            background-color: #ff69b4;
-            color: white;
-            font-size: 22px;
-            font-weight: bold;
-            border-radius: 10px;
-            display: inline-block;
-        }
-        .social-links {
-            margin-top: 20px;
-        }
-        .social-links a {
-            color: #6a5acd; /* Lila */
-            text-decoration: none;
-            font-weight: bold;
-        }
-        /* Spielbereich */
-        .game-container {
-    margin-top: 50px;
-    margin-bottom: 50px;
-    padding: 20px;
-    background-color: #f0f8ff;
-    border-radius: 10px;
-    max-width: 100%; /* Verhindert horizontales Scrollen */
-    overflow: hidden; /* Verhindert, dass das Canvas überläuft */
-}
-
-canvas {
-    width: 100%; /* Skaliert die Breite des Canvas relativ zum Container */
-    height: auto; /* Erhält das Seitenverhältnis bei der Größenänderung */
-    background: #c3e6cb;
-    border: 2px solid #333;
-    display: block;
-    margin: 0 auto;
-}
-        .score {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .game-message {
-            font-size: 20px;
-            font-weight: bold;
-            color: red;
-            display: none;
-        }
-        .slider-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        input[type="range"] {
-            width: 80%;
-            max-width: 400px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madelean's – Coming Soon</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            text-align: center;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .logo {
+            width: 200px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            color: #ff69b4;
+        }
+        h2 {
+            font-size: 20px;
+            color: #ff69b4;
+        }
+        p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .highlight {
+            font-weight: bold;
+        }
+        .countdown-container {
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #ff69b4;
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .social-links {
+            margin-top: 20px;
+        }
+        .social-links a {
+            color: #6a5acd;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .game-container {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        canvas {
+            background: #c3e6cb;
+            border: 2px solid #333;
+            display: block;
+            margin: 0 auto;
+        }
+        .score-container {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .score {
+            color: black;
+        }
+        .misses {
+            color: red;
+        }
+        .game-message {
+            font-size: 20px;
+            font-weight: bold;
+            color: red;
+            display: none;
+        }
+        .slider-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        input[type="range"] {
+            width: 80%;
+            max-width: 400px;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
 
-    <img src="logo.png" alt="Madelean's Logo" class="logo">
-    <h1>MADELEAN'S – <span style="color: #6a5acd;">Nachhaltige Mode für Tier- & Naturschutz!</span></h1>
+    <img src="logo.png" alt="Madelean's Logo" class="logo">
+    <h1>MADELEAN'S – <span style="color: #6a5acd;">Nachhaltige Mode für Tier- & Naturschutz!</span></h1>
 
-    <div class="countdown-container" id="countdown">Lädt...</div>
+    <div class="countdown-container" id="countdown">Lädt...</div>
 
-    <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>. Dabei steht der Schutz von Tieren und der Umwelt im Fokus. Ein Teil der Einnahmen wird jeden Monat an Tier- und Umweltschutzprojekte gespendet. 🌱🐾</p>
+    <p>Unsere Kleidung und Accessoires sind <span class="highlight">fair, nachhaltig & mit Liebe designt</span>. Dabei steht der Schutz von Tieren und der Umwelt im Fokus. Ein Teil der Einnahmen wird jeden Monat an Tier- und Umweltschutzprojekte gespendet. 🌱🐾</p>
 
-    <h2>Warum machen wir das?</h2>
-    <p>Weil wir gemeinsam etwas bewegen können! Mit jedem Kauf unterstützt ihr wichtige Projekte zum Schutz unserer Natur und ihrer Bewohner. Jeder Schritt zählt – und Mode kann dabei helfen, Bewusstsein zu schaffen.</p>
+    <h2>Warum machen wir das?</h2>
+    <p>Weil wir gemeinsam etwas bewegen können! Mit jedem Kauf unterstützt ihr wichtige Projekte zum Schutz unserer Natur und ihrer Bewohner. Jeder Schritt zählt – und Mode kann dabei helfen, Bewusstsein zu schaffen.</p>
 
-    <h2>Wann geht’s los?</h2>
-    <p>🎉 Ab dem <span class="highlight">09.09.2025</span> ist der Shop online! 🎉</p>
+    <h2>Wann geht’s los?</h2>
+    <p>🎉 Ab dem <span class="highlight">09.09.2025</span> ist der Shop online! 🎉</p>
 
-    <div class="social-links">
-        <p>Folgt uns schon jetzt auf <strong>Social Media</strong>, um einen Einblick in unser Projekt & unsere Produkte zu bekommen:</p>
-        <p>📲 <a href="https://www.tiktok.com/@madeleans_shop" target="_blank">TikTok: @madeleans_shop</a></p>
-        <p>📸 <a href="https://www.instagram.com/madeleans_shop" target="_blank">Instagram: @madeleans_shop</a></p>
-    </div>
+    <div class="social-links">
+        <p>Folgt uns schon jetzt auf <strong>Social Media</strong>, um einen Einblick in unser Projekt & unsere Produkte zu bekommen:</p>
+        <p>📲 <a href="https://www.tiktok.com/@madeleans_shop" target="_blank">TikTok: @madeleans_shop</a></p>
+        <p>📸 <a href="https://www.instagram.com/madeleans_shop" target="_blank">Instagram: @madeleans_shop</a></p>
+    </div>
 
-    <p>Lasst uns gemeinsam schützen, was wir lieben! ✨</p>
+    <p>Lasst uns gemeinsam schützen, was wir lieben!✨</p> 
 
-    <!-- Spielbereich -->
-    <div class="game-container">
-        <h2>Spiel: Müllfänger</h2>
-        <p>Steuere das Netz mit dem Schieberegler, um den Müll aufzufangen.</p>
-<p>Jedes Stück Müll, das du erfolgreich fängst, bringt Punkte.</p>
-<p>Aber Vorsicht: Verpasst du zu viel Müll, endet das Spiel!</p>
-        <div class="score">Punkte: <span id="score">0</span></div>
-        <canvas id="gameCanvas" width="400" height="500"></canvas>
-        <div class="game-message" id="gameMessage">Game Over! Punkte: 0</div>
-        <button onclick="startGame()">Spiel starten</button>
+    <h2>Spiel: Müllfänger</h2>
+    <p>Steuere das Netz mit dem Schieberegler und fange Müll auf, aber pass auf: <strong>Fange keinen Vogel!</strong></p>
 
-        <div class="slider-container">
-            <label for="netSlider">Netz bewegen:</label><br>
-            <input type="range" id="netSlider" min="0" max="340" step="1">
-        </div>
-    </div>
+    <div class="game-container">
+        <div class="score-container">
+            <div class="score">Punkte: <span id="score">0</span></div>
+            <div class="misses">Vögel gefangen: <span id="misses">0/3</span></div>
+        </div>
 
-    <script>
-        function countdown() {
-            const targetDate = new Date("September 9, 2025 00:00:00").getTime();
-            setInterval(() => {
-                const now = new Date().getTime();
-                const timeLeft = targetDate - now;
+        <canvas id="gameCanvas" width="400" height="500"></canvas>
+        <div class="game-message" id="gameMessage">Game Over! Du hast 3 Vögel gefangen!</div>
+        <button onclick="startGame()">Spiel starten</button>
 
-                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        <div class="slider-container">
+            <label for="netSlider">Netz bewegen:</label>
+            <input type="range" id="netSlider" min="0" max="340" step="1">
+        </div>
+    </div>
 
-                document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
-            }, 1000);
-        }
+    <script>
+        function countdown() {
+            const targetDate = new Date("September 9, 2025 00:00:00").getTime();
+            setInterval(() => {
+                const now = new Date().getTime();
+                const timeLeft = targetDate - now;
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                document.getElementById("countdown").innerHTML = `Noch ${days} Tage, ${hours} Std., ${minutes} Min., ${seconds} Sek.`;
+            }, 1000);
+        }
+        countdown();
 
-        countdown();
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
 
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
+        let score = 0;
+        let birdsCaught = 0;
+        let trashItems = [];
+        let gameRunning = false;
 
-        let score = 0;
-        let misses = 0;
-        let gameInterval;
-        let gameRunning = false;
+        const net = { x: 180, y: 450, width: 60, height: 40, img: new Image() };
+        net.img.src = "netz.png";
 
-        const net = {
-            x: 180,
-            y: 450,
-            width: 60,
-            height: 40,
-            img: new Image()
-        };
-        net.img.src = "netz.png";  // Stelle sicher, dass du dieses Bild hast.
+        const trashImages = ["dose.png", "flasche.png", "plastik.png"];
+        const birdImage = "vogel.png";
 
-        const trashImages = ["flasche.png", "dose.png", "plastik.png"];  // Stelle sicher, dass du diese Bilder hast.
-        let trashItems = [];
+        function createTrash() {
+            const isBird = Math.random() < 0.2;
+            const img = new Image();
+            img.src = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
 
-        function createTrash() {
-            const img = new Image();
-            img.src = trashImages[Math.floor(Math.random() * trashImages.length)];
+            trashItems.push({
+                x: Math.random() * (canvas.width - 40),
+                y: -50,
+                width: 40,
+                height: 40,
+                img: img,
+                speed: 2 + Math.random() * 3,
+                isBird: isBird
+            });
+        }
 
-            trashItems.push({
-                x: Math.random() * (canvas.width - 40),
-                y: -50,
-                width: 40,
-                height: 40,
-                img: img,
-                speed: 2 + Math.random() * 3
-            });
-        }
+        function updateGame() {
+            if (!gameRunning) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
 
-        function updateGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(net.img, net.x, net.y, net.width, net.height);
+            trashItems.forEach((trash, i) => {
+                trash.y += trash.speed * 0.5;
+                ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+            });
 
-    for (let i = trashItems.length - 1; i >= 0; i--) {
-        let trash = trashItems[i];
-        trash.y += trash.speed;
-        ctx.drawImage(trash.img, trash.x, trash.y, trash.width, trash.height);
+            if (Math.random() < 0.01) createTrash();
+            requestAnimationFrame(updateGame);
+        }
 
-        // Kollisionserkennung mit dem Netz
-        if (
-            trash.y + trash.height >= net.y &&
-            trash.x + trash.width >= net.x &&
-            trash.x <= net.x + net.width
-        ) {
-            score++;
-            document.getElementById("score").textContent = score;
-            trashItems.splice(i, 1); // Müll entfernen
-            continue;
-        }
-
-        // Müll erreicht den Boden (nicht gefangen)
-        if (trash.y > canvas.height) {
-            misses++;
-            trashItems.splice(i, 1); // Müll entfernen
-            if (misses >= 3) {
-                gameOver();
-                return;
-            }
-        }
-    }
-
-    if (Math.random() < 0.02) createTrash();
-}
-
-        function gameOver() {
-            clearInterval(gameInterval);
-            gameRunning = false;
-            document.getElementById("gameMessage").textContent = `Game Over! Punkte: ${score}`;
-            document.getElementById("gameMessage").style.display = "block";
-        }
-
-        function startGame() {
-            score = 0;
-            misses = 0;
-            document.getElementById("score").textContent = score;
-            trashItems = [];
-            document.getElementById("gameMessage").style.display = "none";
-            clearInterval(gameInterval);
-            gameRunning = true;
-            gameInterval = setInterval(updateGame, 20);
-        }
-
-        document.getElementById("netSlider").addEventListener("input", function (event) {
-            net.x = event.target.value;
-        });
-
-    </script>
+        function startGame() {
+            score = 0;
+            birdsCaught = 0;
+            gameRunning = true;
+            updateGame();
+        }
+    </script>
 
 </body>
 </html>
