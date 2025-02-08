@@ -181,6 +181,8 @@
         let misses = 0;
         let gameInterval;
         let objects = [];
+        let fallSpeed = 5; // ⬅ Startgeschwindigkeit
+        let maxSpeed = 15; // ⬅ Höchstgeschwindigkeit
 
         let netSlider = document.getElementById("netSlider");
         let scoreDisplay = document.getElementById("score");
@@ -212,6 +214,7 @@
             objects = [];
             score = 0;
             misses = 0;
+            fallSpeed = 5; // Geschwindigkeit zurücksetzen
             scoreDisplay.innerText = score;
             missesDisplay.innerText = misses + "/3";
             gameMessage.style.display = "none";
@@ -248,16 +251,16 @@
 
             for (let i = objects.length - 1; i >= 0; i--) {
                 let obj = objects[i];
-                obj.y += 5;
+                obj.y += fallSpeed; // 🎯 Hier fällt es jetzt schneller!
 
                 ctx.drawImage(obj.image, obj.x, obj.y, obj.width, obj.height);
 
                 // Kollisionserkennung
                 if (
-                    obj.y + obj.height >= 450 && // Oben vom Netz erreicht
-                    obj.y <= 450 + netHeight && // Unten vom Netz erreicht
-                    obj.x + obj.width >= netX && // Links vom Netz erreicht
-                    obj.x <= netX + netWidth // Rechts vom Netz erreicht
+                    obj.y + obj.height >= 450 &&
+                    obj.y <= 450 + netHeight &&
+                    obj.x + obj.width >= netX &&
+                    obj.x <= netX + netWidth
                 ) {
                     if (obj.type === "bird") {
                         misses++;
@@ -269,9 +272,13 @@
                     } else {
                         score++;
                         scoreDisplay.innerText = score;
+
+                        // ⬆ Geschwindigkeitssteigerung alle 5 Punkte
+                        if (score % 5 === 0 && fallSpeed < maxSpeed) {
+                            fallSpeed += 1;
+                        }
                     }
 
-                    // Objekt aus dem Array entfernen
                     objects.splice(i, 1);
                 }
 
