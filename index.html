@@ -229,20 +229,22 @@
         }
 
         function spawnObject() {
-            let isBird = Math.random() < 0.3;
-            let img = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
+    let isBird = Math.random() < 0.3;
+    let img = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
 
-            objects.push({
-                x: Math.random() * (canvas.width - 40),
-                y: 0,
-                width: 40,
-                height: 40,
-                type: isBird ? "bird" : "trash",
-                image: img
-            });
+    objects.push({
+        x: Math.random() * (canvas.width - 40),
+        y: 0,
+        width: 40,
+        height: 40,
+        type: isBird ? "bird" : "trash",
+        image: img
+    });
 
-            setTimeout(spawnObject, Math.random() * 2000 + 1000);
-        }
+    // ⏳ Spawnrate hängt jetzt von der Fallgeschwindigkeit ab!
+    let spawnRate = Math.max(300, 2000 - (fallSpeed * 100)); // Min. 300ms
+    setTimeout(spawnObject, spawnRate);
+}
 
         function updateGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
