@@ -167,6 +167,83 @@
             }, 1000);
         }
         countdown();
+    <script>
+    let canvas = document.getElementById("gameCanvas");
+    let ctx = canvas.getContext("2d");
+
+    let netX = 170; // Startposition des Netzes
+    let score = 0;
+    let misses = 0;
+    let gameInterval;
+    
+    // Elemente aktualisieren
+    document.getElementById("netSlider").addEventListener("input", function() {
+        netX = this.value;
+    });
+
+    let objects = []; // Enthält fallende Objekte (Müll & Vögel)
+    
+    function startGame() {
+        objects = []; // Reset Objekte
+        score = 0;
+        misses = 0;
+        document.getElementById("score").innerText = score;
+        document.getElementById("misses").innerText = misses + "/3";
+        document.getElementById("gameMessage").style.display = "none";
+        
+        gameInterval = setInterval(updateGame, 50);
+        spawnObject();
+    }
+
+    function spawnObject() {
+        let isBird = Math.random() < 0.3; // 30% Wahrscheinlichkeit für einen Vogel
+        objects.push({
+            x: Math.random() * 350,
+            y: 0,
+            type: isBird ? "bird" : "trash"
+        });
+        setTimeout(spawnObject, Math.random() * 2000 + 1000); // Neues Objekt spawnen
+    }
+
+    function updateGame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Netz zeichnen
+        ctx.fillStyle = "blue";
+        ctx.fillRect(netX, 450, 60, 20);
+
+        // Objekte bewegen & prüfen, ob sie gefangen wurden
+        for (let i = 0; i < objects.length; i++) {
+            let obj = objects[i];
+            obj.y += 5;
+
+            // Farben für Müll & Vögel
+            ctx.fillStyle = obj.type === "bird" ? "red" : "green";
+            ctx.fillRect(obj.x, obj.y, 20, 20);
+
+            // Überprüfung: Ist das Objekt im Netz?
+            if (obj.y >= 450 && obj.x >= netX && obj.x <= netX + 60) {
+                if (obj.type === "bird") {
+                    misses++;
+                    document.getElementById("misses").innerText = misses + "/3";
+                    if (misses >= 3) {
+                        endGame();
+                        return;
+                    }
+                } else {
+                    score++;
+                    document.getElementById("score").innerText = score;
+                }
+                objects.splice(i, 1); // Entferne das gefangene Objekt
+                i--;
+            }
+        }
+    }
+
+    function endGame() {
+        clearInterval(gameInterval);
+        document.getElementById("gameMessage").style.display = "block";
+    }
     </script>
 
 </body>
