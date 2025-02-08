@@ -170,12 +170,13 @@
 </script>
 
 <script>
-    // Warten, bis das DOM geladen ist
     document.addEventListener("DOMContentLoaded", function() {
         let canvas = document.getElementById("gameCanvas");
         let ctx = canvas.getContext("2d");
 
         let netX = 170;
+        let netWidth = 60;
+        let netHeight = 40;
         let score = 0;
         let misses = 0;
         let gameInterval;
@@ -228,8 +229,10 @@
             let img = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
 
             objects.push({
-                x: Math.random() * 350,
+                x: Math.random() * (canvas.width - 40),
                 y: 0,
+                width: 40,
+                height: 40,
                 type: isBird ? "bird" : "trash",
                 image: img
             });
@@ -241,15 +244,21 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Netz zeichnen
-            ctx.drawImage(netImage, netX, 450, 60, 40);
+            ctx.drawImage(netImage, netX, 450, netWidth, netHeight);
 
-            for (let i = 0; i < objects.length; i++) {
+            for (let i = objects.length - 1; i >= 0; i--) {
                 let obj = objects[i];
                 obj.y += 5;
 
-                ctx.drawImage(obj.image, obj.x, obj.y, 40, 40);
+                ctx.drawImage(obj.image, obj.x, obj.y, obj.width, obj.height);
 
-                if (obj.y >= 450 && obj.x >= netX && obj.x <= netX + 60) {
+                // Kollisionserkennung
+                if (
+                    obj.y + obj.height >= 450 && // Oben vom Netz erreicht
+                    obj.y <= 450 + netHeight && // Unten vom Netz erreicht
+                    obj.x + obj.width >= netX && // Links vom Netz erreicht
+                    obj.x <= netX + netWidth // Rechts vom Netz erreicht
+                ) {
                     if (obj.type === "bird") {
                         misses++;
                         missesDisplay.innerText = misses + "/3";
@@ -261,8 +270,14 @@
                         score++;
                         scoreDisplay.innerText = score;
                     }
+
+                    // Objekt aus dem Array entfernen
                     objects.splice(i, 1);
-                    i--;
+                }
+
+                // Objekt entfernen, wenn es unten rausfällt
+                if (obj.y > canvas.height) {
+                    objects.splice(i, 1);
                 }
             }
         }
@@ -275,5 +290,6 @@
         document.querySelector("button").addEventListener("click", startGame);
     });
 </script>
+    
 </body>
 </html>
