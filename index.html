@@ -248,6 +248,11 @@
         function spawnObject() {
     if (!gameRunning) return; // Falls das Spiel vorbei ist, stoppe das Spawning
 
+    // ❗ Bevor ein neues Objekt gespawnt wird, entferne alte aus dem Array
+    if (objects.length > 1) {
+        objects.shift(); // Entferne das älteste Objekt
+    }
+
     let isBird = Math.random() < 0.3;
     let img = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
 
@@ -260,10 +265,10 @@
         image: img
     });
 
-    // 🔥 **Nur EIN Objekt zur gleichen Zeit!**
-    spawnRate = Math.max(300, 1700 - (fallSpeed * 80)); // Start bei 1700ms, Mindestwert 300ms
+    // 🔥 **Nur EIN Objekt zur gleichen Zeit, immer nach einer festen Wartezeit!**
+    spawnRate = Math.max(300, 1700 - (fallSpeed * 80));
 
-    setTimeout(spawnObject, spawnRate); // Starte das nächste Objekt nach der Wartezeit
+    setTimeout(spawnObject, spawnRate);
 }
 
         function updateGame(deltaTime) {
