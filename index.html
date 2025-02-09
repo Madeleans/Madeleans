@@ -169,162 +169,132 @@
     countdown();
 </script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let canvas = document.getElementById("gameCanvas");
-        let ctx = canvas.getContext("2d");
+<script>  
+    document.addEventListener("DOMContentLoaded", function() {  
+        let canvas = document.getElementById("gameCanvas");  
+        let ctx = canvas.getContext("2d");  
 
-        let netX = 170;
-        let netWidth = 60;
-        let netHeight = 40;
-        let score = 0;
-        let misses = 0;
-        let objects = [];
-        let fallSpeed = 5; // Startgeschwindigkeit
-        let maxSpeed = 30; // Höchstgeschwindigkeit
-        let lastUpdateTime = 0;
-        let gameRunning = false;
-        let lastSpawnTime = 0; // Letzte Zeit, als ein Objekt gespawnt wurde
-        let spawnRate = 1700; // Start-Spawnrate in ms
+        let netX = 170;  
+        let netWidth = 60;  
+        let netHeight = 40;  
+        let score = 0;  
+        let misses = 0;  
+        let gameInterval;  
+        let objects = [];  
+        let fallSpeed = 5;  
+        let maxSpeed = 30;  
 
-        let netSlider = document.getElementById("netSlider");
-        let scoreDisplay = document.getElementById("score");
-        let missesDisplay = document.getElementById("misses");
-        let gameMessage = document.getElementById("gameMessage");
+        let netSlider = document.getElementById("netSlider");  
+        let scoreDisplay = document.getElementById("score");  
+        let missesDisplay = document.getElementById("misses");  
+        let gameMessage = document.getElementById("gameMessage");  
 
-        // Bilder laden
-        let netImage = new Image();
-        netImage.src = "netz.png";
+        let netImage = new Image();  
+        netImage.src = "netz.png";  
 
-        let trashImages = [
-            "dose.png",
-            "plastik.png",
-            "flasche.png"
-        ].map(src => {
-            let img = new Image();
-            img.src = src;
-            return img;
-        });
+        let trashImages = [  
+            "dose.png",  
+            "plastik.png",  
+            "flasche.png"  
+        ].map(src => {  
+            let img = new Image();  
+            img.src = src;  
+            return img;  
+        });  
 
-        let birdImage = new Image();
-        birdImage.src = "vogel.png";
+        let birdImage = new Image();  
+        birdImage.src = "vogel.png";  
 
-        netSlider.addEventListener("input", function() {
-            netX = parseInt(this.value);
-        });
+        netSlider.addEventListener("input", function() {  
+            netX = parseInt(this.value);  
+        });  
 
-        function startGame() {
-            objects = [];
-            score = 0;
-            misses = 0;
-            fallSpeed = 5;
-            spawnRate = 2000; // Startwert für die Spawnrate
-            scoreDisplay.innerText = score;
-            missesDisplay.innerText = misses + "/3";
-            gameMessage.style.display = "none";
+        function startGame() {  
+            objects = [];  
+            score = 0;  
+            misses = 0;  
+            fallSpeed = 5;  
+            scoreDisplay.innerText = score;  
+            missesDisplay.innerText = misses + "/3";  
+            gameMessage.style.display = "none";  
 
-            gameRunning = true;
-            lastSpawnTime = performance.now(); // Zeitpunkt des ersten Spawns
-            requestAnimationFrame(gameLoop);
-        }
+            if (gameInterval) {  
+                clearInterval(gameInterval);  
+            }  
 
-        function gameLoop(currentTime) {
-            if (!gameRunning) return;
+            gameInterval = setInterval(updateGame, 50);  
+            spawnObject();  
+        }  
 
-            let deltaTime = (currentTime - lastUpdateTime) / 16.67;
-            lastUpdateTime = currentTime;
+        function spawnObject() {  
+            let isBird = Math.random() < 0.3;  
+            let img = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];  
 
-            updateGame(deltaTime);
+            objects.push({  
+                x: Math.random() * (canvas.width - 40),  
+                y: 0,  
+                width: 40,  
+                height: 40,  
+                type: isBird ? "bird" : "trash",  
+                image: img  
+            });  
 
-            // 🔥 Prüfen, ob ein neues Objekt gespawnt werden soll
-            if (currentTime - lastSpawnTime >= spawnRate) {
-                spawnObject();
-                lastSpawnTime = currentTime;
-            }
+            // 🔥 **Altbewährte dynamische Spawnrate, aber schnellerer Start!**  
+            let spawnRate = Math.max(300, 1700 - (fallSpeed * 100)); // Startet bei 1700 ms  
+            setTimeout(spawnObject, spawnRate);  
+        }  
 
-            requestAnimationFrame(gameLoop);
-        }
+        function updateGame() {  
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  
 
-        function spawnObject() {
-    if (!gameRunning) return; // Falls das Spiel vorbei ist, stoppe das Spawning
+            ctx.drawImage(netImage, netX, 450, netWidth, netHeight);  
 
-    // ❗ Bevor ein neues Objekt gespawnt wird, entferne alte aus dem Array
-    if (objects.length > 1) {
-        objects.shift(); // Entferne das älteste Objekt
-    }
+            for (let i = objects.length - 1; i >= 0; i--) {  
+                let obj = objects[i];  
+                obj.y += fallSpeed;  
 
-    let isBird = Math.random() < 0.3;
-    let img = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
+                ctx.drawImage(obj.image, obj.x, obj.y, obj.width, obj.height);  
 
-    objects.push({
-        x: Math.random() * (canvas.width - 40),
-        y: 0,
-        width: 40,
-        height: 40,
-        type: isBird ? "bird" : "trash",
-        image: img
-    });
+                if (  
+                    obj.y + obj.height >= 450 &&  
+                    obj.y <= 450 + netHeight &&  
+                    obj.x + obj.width >= netX &&  
+                    obj.x <= netX + netWidth  
+                ) {  
+                    if (obj.type === "bird") {  
+                        misses++;  
+                        missesDisplay.innerText = misses + "/3";  
+                        if (misses >= 3) {  
+                            endGame();  
+                            return;  
+                        }  
+                    } else {  
+                        score++;  
+                        scoreDisplay.innerText = score;  
 
-    // 🔥 **Nur EIN Objekt zur gleichen Zeit, immer nach einer festen Wartezeit!**
-    spawnRate = Math.max(300, 1700 - (fallSpeed * 80));
+                        if (score % 5 === 0 && fallSpeed < maxSpeed) {  
+                            fallSpeed += 1;  
+                        }  
+                    }  
 
-    setTimeout(spawnObject, spawnRate);
-}
+                    objects.splice(i, 1);  
+                }  
 
-        function updateGame(deltaTime) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (obj.y > canvas.height) {  
+                    objects.splice(i, 1);  
+                }  
+            }  
+        }  
 
-            // Netz zeichnen
-            ctx.drawImage(netImage, netX, 450, netWidth, netHeight);
+        function endGame() {  
+            clearInterval(gameInterval);  
+            gameMessage.style.display = "block";  
+        }  
 
-            for (let i = objects.length - 1; i >= 0; i--) {
-                let obj = objects[i];
-                obj.y += fallSpeed * deltaTime;
-
-                ctx.drawImage(obj.image, obj.x, obj.y, obj.width, obj.height);
-
-                // Kollisionserkennung
-                if (
-                    obj.y + obj.height >= 450 &&
-                    obj.y <= 450 + netHeight &&
-                    obj.x + obj.width >= netX &&
-                    obj.x <= netX + netWidth
-                ) {
-                    if (obj.type === "bird") {
-                        misses++;
-                        missesDisplay.innerText = misses + "/3";
-                        if (misses >= 3) {
-                            endGame();
-                            return;
-                        }
-                    } else {
-                        score++;
-                        scoreDisplay.innerText = score;
-
-                        // ⬆ Geschwindigkeit & Spawnrate steigen alle 5 Punkte
-                        if (score % 5 === 0 && fallSpeed < maxSpeed) {
-                            fallSpeed += 1;
-                        }
-                    }
-
-                    objects.splice(i, 1);
-                }
-
-                // Objekt entfernen, wenn es unten rausfällt
-                if (obj.y > canvas.height) {
-                    objects.splice(i, 1);
-                }
-            }
-        }
-
-        function endGame() {
-            gameRunning = false;
-            gameMessage.style.display = "block";
-        }
-
-        document.querySelector("button").addEventListener("click", startGame);
-    });
+        document.querySelector("button").addEventListener("click", startGame);  
+    });  
 </script>
+
     
 </body>
 </html>
