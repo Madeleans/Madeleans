@@ -169,7 +169,7 @@
     countdown();
 </script>
 
-    <script>  
+<script>  
     document.addEventListener("DOMContentLoaded", function() {  
         let canvas = document.getElementById("gameCanvas");  
         let ctx = canvas.getContext("2d");  
@@ -180,9 +180,10 @@
         let score = 0;  
         let misses = 0;  
         let objects = [];  
-        let fallSpeed = 5;  
+        let fallSpeed = 5;  // ⬅ Startgeschwindigkeit gesenkt  
         let maxSpeed = 30;  
         let gameRunning = false;  
+        let lastUpdateTime = 0;  
 
         let netSlider = document.getElementById("netSlider");  
         let scoreDisplay = document.getElementById("score");  
@@ -213,19 +214,24 @@
             objects = [];  
             score = 0;  
             misses = 0;  
-            fallSpeed = 5;  
+            fallSpeed = 3;  // Geschwindigkeit sanft starten  
             scoreDisplay.innerText = score;  
             missesDisplay.innerText = misses + "/3";  
             gameMessage.style.display = "none";  
 
             gameRunning = true;  
+            lastUpdateTime = performance.now();  
             spawnObject();  
-            requestAnimationFrame(gameLoop); // Starte die flüssige Animation  
+            requestAnimationFrame(gameLoop);  
         }  
 
-        function gameLoop() {  
+        function gameLoop(currentTime) {  
             if (!gameRunning) return;  
-            updateGame();  
+
+            let deltaTime = (currentTime - lastUpdateTime) / 16.67;  
+            lastUpdateTime = currentTime;  
+
+            updateGame(deltaTime);  
             requestAnimationFrame(gameLoop);  
         }  
 
@@ -244,18 +250,17 @@
                 image: img  
             });  
 
-            // **🔥 Dynamische Spawnrate: Nicht zu schnell, aber progressiv**  
             let spawnRate = Math.max(300, 2000 - (fallSpeed * 80));  
             setTimeout(spawnObject, spawnRate);  
         }  
 
-        function updateGame() {  
+        function updateGame(deltaTime) {  
             ctx.clearRect(0, 0, canvas.width, canvas.height);  
             ctx.drawImage(netImage, netX, 450, netWidth, netHeight);  
 
             for (let i = objects.length - 1; i >= 0; i--) {  
                 let obj = objects[i];  
-                obj.y += fallSpeed;  
+                obj.y += fallSpeed * deltaTime;  // **🔥 Geschwindigkeit stabilisiert!**  
 
                 ctx.drawImage(obj.image, obj.x, obj.y, obj.width, obj.height);  
 
