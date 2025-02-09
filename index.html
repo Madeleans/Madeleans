@@ -185,7 +185,7 @@
         let lastUpdateTime = 0;
         let gameRunning = false;
         let lastSpawnTime = 0; // Letzte Zeit, als ein Objekt gespawnt wurde
-        let spawnRate = 2000; // Start-Spawnrate in ms
+        let spawnRate = 1700; // Start-Spawnrate in ms
 
         let netSlider = document.getElementById("netSlider");
         let scoreDisplay = document.getElementById("score");
@@ -258,9 +258,8 @@
         image: img
     });
 
-    // 🔥 **Sanftere dynamische Spawnrate mit Zufallsverzögerung**
-    let randomFactor = Math.random() * 300; // Maximal 300ms zufällige Verzögerung
-    spawnRate = Math.max(400, (1700 + randomFactor) - (fallSpeed * 60)); // 🔥 Abnahme verlangsamt
+    // 🔥 **Zurück zur alten, bewährten Dynamik mit leicht schnellerem Start**
+    spawnRate = Math.max(300, 1700 - (fallSpeed * 80)); // Start bei 1700 statt 2000
 
     setTimeout(spawnObject, spawnRate);
 }
