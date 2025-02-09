@@ -330,6 +330,39 @@
             "flasche.png"
         ].map(src => {
             let img = new Image();
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let canvas = document.getElementById("gameCanvas");
+        let ctx = canvas.getContext("2d");
+
+        let netX = 170;
+        let netWidth = 60;
+        let netHeight = 40;
+        let score = 0;
+        let misses = 0;
+        let objects = [];
+        let fallSpeed = 5; // Startgeschwindigkeit
+        let maxSpeed = 30; // Höchstgeschwindigkeit
+        let lastUpdateTime = 0;
+        let gameRunning = false;
+        let lastSpawnTime = 0; // Letzte Zeit, als ein Objekt gespawnt wurde
+        let spawnRate = 2000; // Start-Spawnrate in ms
+
+        let netSlider = document.getElementById("netSlider");
+        let scoreDisplay = document.getElementById("score");
+        let missesDisplay = document.getElementById("misses");
+        let gameMessage = document.getElementById("gameMessage");
+
+        // Bilder laden
+        let netImage = new Image();
+        netImage.src = "netz.png";
+
+        let trashImages = [
+            "dose.png",
+            "plastik.png",
+            "flasche.png"
+        ].map(src => {
+            let img = new Image();
             img.src = src;
             return img;
         });
