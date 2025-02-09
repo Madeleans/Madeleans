@@ -258,9 +258,9 @@
         image: img
     });
 
-    // 🔥 Dynamische Spawnrate mit zufälliger Verzögerung
-    let randomFactor = Math.random() * 500; // Fügt bis zu 500ms zufällige Verzögerung hinzu
-    spawnRate = Math.max(300, (1500 + randomFactor) - (fallSpeed * 80));
+    // 🔥 **Sanftere dynamische Spawnrate mit Zufallsverzögerung**
+    let randomFactor = Math.random() * 300; // Maximal 300ms zufällige Verzögerung
+    spawnRate = Math.max(400, (1700 + randomFactor) - (fallSpeed * 60)); // 🔥 Abnahme verlangsamt
 
     setTimeout(spawnObject, spawnRate);
 }
