@@ -169,7 +169,7 @@
     countdown();
 </script>
 
-<script>  
+    <script>  
     document.addEventListener("DOMContentLoaded", function() {  
         let canvas = document.getElementById("gameCanvas");  
         let ctx = canvas.getContext("2d");  
@@ -179,10 +179,10 @@
         let netHeight = 40;  
         let score = 0;  
         let misses = 0;  
-        let gameInterval;  
         let objects = [];  
         let fallSpeed = 5;  
         let maxSpeed = 30;  
+        let gameRunning = false;  
 
         let netSlider = document.getElementById("netSlider");  
         let scoreDisplay = document.getElementById("score");  
@@ -218,15 +218,20 @@
             missesDisplay.innerText = misses + "/3";  
             gameMessage.style.display = "none";  
 
-            if (gameInterval) {  
-                clearInterval(gameInterval);  
-            }  
-
-            gameInterval = setInterval(updateGame, 50);  
+            gameRunning = true;  
             spawnObject();  
+            requestAnimationFrame(gameLoop); // Starte die flüssige Animation  
+        }  
+
+        function gameLoop() {  
+            if (!gameRunning) return;  
+            updateGame();  
+            requestAnimationFrame(gameLoop);  
         }  
 
         function spawnObject() {  
+            if (!gameRunning) return;  
+
             let isBird = Math.random() < 0.3;  
             let img = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];  
 
@@ -239,14 +244,13 @@
                 image: img  
             });  
 
-            // 🔥 **Altbewährte dynamische Spawnrate, aber schnellerer Start!**  
-            let spawnRate = Math.max(300, 1700 - (fallSpeed * 100)); // Startet bei 1700 ms  
+            // **🔥 Dynamische Spawnrate: Nicht zu schnell, aber progressiv**  
+            let spawnRate = Math.max(300, 2000 - (fallSpeed * 80));  
             setTimeout(spawnObject, spawnRate);  
         }  
 
         function updateGame() {  
             ctx.clearRect(0, 0, canvas.width, canvas.height);  
-
             ctx.drawImage(netImage, netX, 450, netWidth, netHeight);  
 
             for (let i = objects.length - 1; i >= 0; i--) {  
@@ -287,14 +291,13 @@
         }  
 
         function endGame() {  
-            clearInterval(gameInterval);  
+            gameRunning = false;  
             gameMessage.style.display = "block";  
         }  
 
         document.querySelector("button").addEventListener("click", startGame);  
     });  
 </script>
-
     
 </body>
 </html>
