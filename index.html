@@ -170,6 +170,7 @@
 </script>
 
 <script>
+<script>
     document.addEventListener("DOMContentLoaded", function() {
         let canvas = document.getElementById("gameCanvas");
         let ctx = canvas.getContext("2d");
@@ -179,10 +180,11 @@
         let netHeight = 40;
         let score = 0;
         let misses = 0;
-        let gameInterval;
         let objects = [];
         let fallSpeed = 5; // ⬅ Startgeschwindigkeit
         let maxSpeed = 30; // ⬅ Höchstgeschwindigkeit
+        let lastUpdateTime = 0; // Letzte Frame-Zeit
+        let gameRunning = false; // Spiel läuft ja/nein
 
         let netSlider = document.getElementById("netSlider");
         let scoreDisplay = document.getElementById("score");
@@ -219,33 +221,40 @@
             missesDisplay.innerText = misses + "/3";
             gameMessage.style.display = "none";
 
-            if (gameInterval) {
-                clearInterval(gameInterval);
-            }
-
-            gameInterval = setInterval(updateGame, 50);
+            gameRunning = true; // Spiel starten
             spawnObject();
+            requestAnimationFrame(gameLoop); // Startet die Animation
+        }
+
+        function gameLoop(currentTime) {
+            if (!gameRunning) return; // Falls Spiel vorbei ist, beende Animation
+
+            let deltaTime = (currentTime - lastUpdateTime) / 16.67; // Normiert auf 60 FPS
+            lastUpdateTime = currentTime;
+
+            updateGame(deltaTime);
+            requestAnimationFrame(gameLoop); // Nächsten Frame rendern
         }
 
         function spawnObject() {
-    let isBird = Math.random() < 0.3;
-    let img = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
+            let isBird = Math.random() < 0.3;
+            let img = isBird ? birdImage : trashImages[Math.floor(Math.random() * trashImages.length)];
 
-    objects.push({
-        x: Math.random() * (canvas.width - 40),
-        y: 0,
-        width: 40,
-        height: 40,
-        type: isBird ? "bird" : "trash",
-        image: img
-    });
+            objects.push({
+                x: Math.random() * (canvas.width - 40),
+                y: 0,
+                width: 40,
+                height: 40,
+                type: isBird ? "bird" : "trash",
+                image: img
+            });
 
-    // ⏳ Spawnrate hängt jetzt von der Fallgeschwindigkeit ab!
-    let spawnRate = Math.max(300, 2000 - (fallSpeed * 100)); // Min. 300ms
-    setTimeout(spawnObject, spawnRate);
-}
+            // ⏳ Spawnrate hängt jetzt von der Fallgeschwindigkeit ab!
+            let spawnRate = Math.max(300, 2000 - (fallSpeed * 100)); // Mindestens 300ms
+            setTimeout(spawnObject, spawnRate);
+        }
 
-        function updateGame() {
+        function updateGame(deltaTime) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Netz zeichnen
@@ -253,7 +262,7 @@
 
             for (let i = objects.length - 1; i >= 0; i--) {
                 let obj = objects[i];
-                obj.y += fallSpeed; // 🎯 Hier fällt es jetzt schneller!
+                obj.y += fallSpeed * deltaTime; // Delta-Time für gleichmäßige Bewegung
 
                 ctx.drawImage(obj.image, obj.x, obj.y, obj.width, obj.height);
 
@@ -275,7 +284,7 @@
                         score++;
                         scoreDisplay.innerText = score;
 
-                        // ⬆ Geschwindigkeitssteigerung alle 5 Punkte
+                        // ⬆ Geschwindigkeit steigt alle 5 Punkte
                         if (score % 5 === 0 && fallSpeed < maxSpeed) {
                             fallSpeed += 1;
                         }
@@ -292,7 +301,7 @@
         }
 
         function endGame() {
-            clearInterval(gameInterval);
+            gameRunning = false; // Spiel stoppen
             gameMessage.style.display = "block";
         }
 
