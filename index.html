@@ -257,8 +257,8 @@
                 image: img
             });
 
-            // 🔥 Dynamische Spawnrate
-            spawnRate = Math.max(300, 2000 - (fallSpeed * 80));
+            // **🔥 Dynamische Spawnrate-Anpassung:** Mehr Objekte bei höherer Geschwindigkeit
+            spawnRate = Math.max(300, 2000 - (fallSpeed * 80)); // Mindestens 300ms Wartezeit
         }
 
         function updateGame(deltaTime) {
